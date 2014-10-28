@@ -5,7 +5,7 @@ var childprocess, speaker, listener;
 
 exports.start = function (){
     if(communication && (childprocess == undefined || childprocess.connected == undefined || childprocess.connected==false)) {
-        log.info("Starting child process");
+        log.info("Starting Irc Bot...");
         childprocess = child_process.fork(appDir+'/ircNode/lib/bot');
         attachListeners();
         return childprocess;
@@ -15,7 +15,7 @@ exports.start = function (){
 
 exports.stop = function(){
     if(childprocess.connected) {
-        log.info("Killing child process");
+        log.info("Stopping Irc Bot...");
         return childprocess.kill();
     } else
         return false;
@@ -26,7 +26,7 @@ exports.restart = function(){
     setTimeout(exports.start,100);
 }
 
-exports.setupCommunication = function() {
+exports.setupCommunications = function(){
     if(!communication) {
         listener = messenger.createListener(9020);
         listener.on('ircCmd', ircClient.cmd);
@@ -41,36 +41,31 @@ exports.send = function(subject,data)
     return speaker.send(subject, data);
 }
 
-attachListeners = function()
-{
+attachListeners = function(){
     if(childprocess.connected)
     {
         childprocess.on('disconnect',disconnected);
         childprocess.on('close',closed);
         childprocess.on('exit',exited);
-        childprocess.on('error',error);
+        childprocess.on('error',onerror);
     }
 }
 
-disconnected    = function()
-{
+disconnected = function() {
     childprocess.removeAllListeners('disconnect');
     childprocess.removeAllListeners('close');
     childprocess.removeAllListeners('exit');
     childprocess.removeAllListeners('error');
 }
 
-closed    = function(code,signal)
-{
+closed = function(code,signal) {
     log.warn({closedcode:code,closedsignal:signal});
 }
 
-exited    = function(code,signal)
-{
+exited = function(code,signal) {
     log.warn({exitedcode:code,exitedsignal:signal});
 }
 
-error    = function(err)
-{
+onerror = function(err) {
     log.error(err);
 }

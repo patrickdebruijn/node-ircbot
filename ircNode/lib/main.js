@@ -1,20 +1,20 @@
-var     processManager  = require('./processManager');
-var     bunyan          = require('bunyan');
-var     path            = require('path');
-var     ircCmd 		    = require('./ircClient/ircCmd');
-var     ircConn         = require('./ircClient/ircConnection');
 global.utils 		    = require('./utils');
 global.cfg 				= {};
 global.log 		        = {};
 global.appDir 		    = {};
 
-exports.init = function (config) {
-    if(config==undefined) console.log('[ERROR] No config file specified');
-    else {
-        appDir=path.dirname(require.main.filename);
+var     bunyan          = require('bunyan');
+var     path            = require('path');
+var     ircCclient 	    = require('./ircClient/ircClient');
 
-        global.cfg      = config;
-        global.log      = bunyan.createLogger({
+
+exports.init = function (config) {
+    if(config==undefined) console.log('[ERROR] No config specified');
+    else {
+        appDir=path.dirname(require.main.filename);  //find the root of the application
+
+        global.cfg      = config;                   //Store config in global so its accesible across the entire application
+        global.log      = bunyan.createLogger({     //Start bunyan logger
             name: "node-ircBot",
             streams: [
                 {
@@ -30,7 +30,5 @@ exports.init = function (config) {
                 }
             ]
         });
-        processManager.setupCommunication();
-        processManager.start();
     }
 };
