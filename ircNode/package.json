@@ -1,0 +1,24 @@
+{
+  "author": "Patrick de Bruijn",
+  "name": "ircNode",
+  "description": "Node lib for ircBots",
+  "keywords": [
+    "irc",
+    "client",
+    "chat"
+  ],
+  "version": "0.0.1",
+  "repository": {
+    "url": ""
+  },
+  "main": "./lib/main",
+  "bin": {
+    "ircNode": "./bin/ircNode"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "optionalDependencies": {},
+  "engines": {
+    "node": "*"
+  }
+}
