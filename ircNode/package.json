@@ -1,24 +1,32 @@
 {
-  "author": "Patrick de Bruijn",
-  "name": "ircNode",
-  "description": "Node lib for ircBots",
-  "keywords": [
-    "irc",
-    "client",
-    "chat"
-  ],
-  "version": "0.0.1",
-  "repository": {
-    "url": ""
-  },
-  "main": "./lib/main",
-  "bin": {
-    "ircNode": "./bin/ircNode"
-  },
-  "dependencies": {},
-  "devDependencies": {},
-  "optionalDependencies": {},
-  "engines": {
-    "node": "*"
-  }
+    "author": "Patrick de Bruijn <patrickdebruijn@gmail.com>",
+    "name": "ircNode",
+    "description": "Node lib for ircBots",
+    "keywords": [
+        "irc",
+        "client",
+        "chat"
+    ],
+    "version": "0.0.1",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/patrickdebruijn/node-ircbot"
+    },
+    "main": "./lib/main",
+    "homepage": "https://github.com/patrickdebruijn/node-ircbot",
+    "bugs": {
+        "url": "https://github.com/patrickdebruijn/node-ircbot/issues"
+    },
+    "dependencies": {
+        "messenger": "0.0.9",
+        "bunyan": "1.2.2"
+    },
+    "devDependencies": {},
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "optionalDependencies": {},
+    "engines": {
+        "node": "*"
+    }
 }

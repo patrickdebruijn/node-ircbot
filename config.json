@@ -1,0 +1,23 @@
+{
+    "server": {
+        "addr": "ircstockbot.com",
+        "port": 6667,
+        "autoReconnect": true,
+        "maxRetries": 60,
+        "retryDelay": 6,
+        "autoRejoin": true
+    },
+    "bot": {
+        "masterPassword": "paarselama",
+        "commandPrefix":"@",
+        "defaultNick": "Katarina",
+        "user": "Katarina",
+        "real": "Katarina",
+        "pass": "",
+        "autoJoinChannels": ["#home"]
+    },
+    "development": {
+        "debugModus": true,
+        "debugChannel": "#testchannel"
+    }
+}

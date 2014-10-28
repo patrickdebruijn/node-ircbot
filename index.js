@@ -1,2 +1,4 @@
-// INIT IRCNODE  met config file
-// INIT PLUGIN LOADER
+var config      =   require('./config');
+    nodeIrcBot  =   require('./ircNode');
+
+nodeIrcBot.init(config);
