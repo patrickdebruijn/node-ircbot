@@ -1,5 +1,5 @@
+global.ircCmd           = require('./ircCmd');
 var     processManager  = require('./processManager'),
-        ircCmd          = require('./ircCmd'),
         ircConn         = require('./ircConn');
 
 exports.init = function()

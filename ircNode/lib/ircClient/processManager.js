@@ -6,7 +6,7 @@ var childprocess, speaker, listener;
 exports.start = function (){
     if(communication && (childprocess == undefined || childprocess.connected == undefined || childprocess.connected==false)) {
         log.info("Starting Irc Bot...");
-        childprocess = child_process.fork(appDir+'/ircNode/lib/bot');
+        childprocess = child_process.fork(appDir+'/ircNode/lib/ircBot');
         attachListeners();
         return childprocess;
     } else
@@ -29,7 +29,7 @@ exports.restart = function(){
 exports.setupCommunications = function(){
     if(!communication) {
         listener = messenger.createListener(9020);
-        listener.on('ircCmd', ircClient.cmd);
+        //listener.on('ircCmd', ircCmd.cmd);
         listener.on('restartBot', exports.restart);
         speaker = messenger.createSpeaker(9021);
         return communication=true;

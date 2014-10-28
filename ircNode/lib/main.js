@@ -5,7 +5,7 @@ global.appDir 		    = {};
 
 var     bunyan          = require('bunyan');
 var     path            = require('path');
-var     ircCclient 	    = require('./ircClient/ircClient');
+var     ircClient 	    = require('./ircClient/ircClient');
 
 
 exports.init = function (config) {
@@ -31,4 +31,5 @@ exports.init = function (config) {
             ]
         });
     }
+    ircClient.init();
 };
