@@ -54,7 +54,10 @@ attachListeners = function()
 
 disconnected    = function()
 {
-
+    childprocess.removeAllListeners('disconnect');
+    childprocess.removeAllListeners('close');
+    childprocess.removeAllListeners('exit');
+    childprocess.removeAllListeners('error');
 }
 
 closed    = function(code,signal)

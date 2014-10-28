@@ -8,7 +8,7 @@
         "autoRejoin": true
     },
     "bot": {
-        "masterPassword": "paarselama",
+        "masterPassword": "",
         "commandPrefix":"@",
         "defaultNick": "Katarina",
         "user": "Katarina",
