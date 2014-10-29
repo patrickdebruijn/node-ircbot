@@ -29,7 +29,7 @@ exports.restart = function(){
 exports.setupCommunications = function(){
     if(!communication) {
         listener = messenger.createListener(9020);
-        //listener.on('ircCmd', ircCmd.cmd);
+        //listener.on('ircCmd', ircCmd.executecmd);
         listener.on('restartBot', exports.restart);
         speaker = messenger.createSpeaker(9021);
         return communication=true;
