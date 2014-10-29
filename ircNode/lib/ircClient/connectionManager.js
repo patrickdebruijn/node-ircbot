@@ -5,7 +5,6 @@ var connection;
 
 exports.connect = function(){
     if(!isConnected && cfg.server.maxRetries>=attempts){
-
         log.info("Connecting to irc server: " + cfg.server.addr + ":" + cfg.server.port);
         attempts++;
         connection = new net.Socket();
@@ -18,14 +17,12 @@ exports.connect = function(){
 }
 
 exports.disconnect = function(force){
-    if(isConnected)
-    {
+    if(isConnected){
         log.warn("Disconnecting from irc server: "+cfg.server.addr+":"+cfg.server.port);
         connection.destroy();
     }
     disconnected();
-    if(force==undefined && cfg.server.autoReconnect)
-    {
+    if(force==undefined && cfg.server.autoReconnect){
         log.warn("Reconnecting in "+cfg.server.retryDelay*1000+" seconds...");
         setTimeout(exports.connect,cfg.server.retryDelay*1000);
     }
@@ -38,13 +35,13 @@ exports.reconnect = function(){
 
 exports.send = function(data){
     if(isConnected) {
-        connection.write(data + '\n', 'ascii', function () {
+        connection.write(data + '\n', 'ascii', function (){
             log.debug("Sending data to server: "+data);
         });
     }else log.error({subject:"Can't send data when disconnected from server",data:data});
 }
 
-attachListenersToSocket = function() {
+attachListenersToSocket = function(){
     connection.on('connect',onconnect);
     connection.on('end',onend);
     connection.on('timeout',ontimeout);
@@ -53,28 +50,28 @@ attachListenersToSocket = function() {
 }
 
 
-disconnected = function() {
+disconnected = function(){
     log.warn("Irc Bot is disconnected...");
     isConnected=false;
 }
 
-onconnect = function() {
+onconnect = function(){
     log.info("Connected...");
     isConnected=true;
     attempts=0;
 }
 
-onend = function() {
+onend = function(){
     log.warn('Irc server closed the connection');
     disconnect();
 }
 
-ontimeout = function() {
+ontimeout = function(){
     log.warn('Irc server timeout');
     disconnect();
 }
 
-onerror = function(err) {
+onerror = function(err){
     log.error(err);
     disconnect();
 }

@@ -1,3 +1,5 @@
+//Development modus  -> SET VERBOSE
+
 global.utils 		    = require('./utils');
 global.cfg 				= {};
 global.log 		        = {};

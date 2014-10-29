@@ -1,4 +1,7 @@
-global.ircCmd               = require('./ircCmd');
+//Function calling verbetem, niet via eval: http://stackoverflow.com/questions/8206453/call-function-by-string-name-on-node-js
+
+
+//global.ircCmd               = require('./ircCmd');
 global.communication        = {};
 var     processManager      = require('./processManager'),
         connectionManager   = require('./connectionManager');

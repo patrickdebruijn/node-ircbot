@@ -1,3 +1,6 @@
+//Kleurtjes, beter standaard  meldingen via functie //https://github.com/fent/irc-colors.js/blob/master/lib/irc-colors.js
+//Op alfabet + constants gebruiken
+
 exports.send= function(data)
 {
 	//irc.socket.write(data + '\n', 'ascii', function(){
