@@ -13,8 +13,8 @@ exports.init = function (config) {
     else {
         appDir=path.dirname(require.main.filename);  //find the root of the application
 
-        global.cfg      = config;                   //Store config in global so its accesible across the entire application
-        global.log      = bunyan.createLogger({     //Start bunyan logger
+        cfg      = config;                   //Store config in global so its accesible across the entire application
+        log      = bunyan.createLogger({     //Start bunyan logger
             name: "node-ircBot",
             streams: [
                 {

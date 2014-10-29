@@ -1,27 +1,27 @@
-var socket;
+var net 	    = require('net');
 var isConnected = false;
 var attempts    = 0;
+var connection;
 
-exports.connect = function()
-{
-    if(!isConnected && cfg.server.maxRetries<attempts) {
+exports.connect = function(){
+    if(!isConnected && cfg.server.maxRetries>=attempts){
+
         log.info("Connecting to irc server: " + cfg.server.addr + ":" + cfg.server.port);
         attempts++;
-        socket = new net.Socket();
-        socket.setEncoding('ascii');
-        socket.setNoDelay(true);
-        socket.setKeepAlive(true);
-        attachListeners();
-        socket.connect(cfg.server.port, cfg.server.addr);
+        connection = new net.Socket();
+        connection.setEncoding('ascii');
+        connection.setNoDelay(true);
+        connection.setKeepAlive(true);
+        connection.connect(cfg.server.port, cfg.server.addr);
+        attachListenersToSocket();
     }
 }
 
-exports.disconnect = function(force)
-{
+exports.disconnect = function(force){
     if(isConnected)
     {
         log.warn("Disconnecting from irc server: "+cfg.server.addr+":"+cfg.server.port);
-        socket.destroy();
+        connection.destroy();
     }
     disconnected();
     if(force==undefined && cfg.server.autoReconnect)
@@ -29,32 +29,27 @@ exports.disconnect = function(force)
         log.warn("Reconnecting in "+cfg.server.retryDelay*1000+" seconds...");
         setTimeout(exports.connect,cfg.server.retryDelay*1000);
     }
-
 }
 
-exports.reconnect = function()
-{
+exports.reconnect = function(){
     exports.disconnect(true);
     setTimeout(exports.connect,100);
 }
 
 exports.send = function(data){
     if(isConnected) {
-        socket.write(data + '\n', 'ascii', function () {
-            console.log('SEND+++++::', data);
+        connection.write(data + '\n', 'ascii', function () {
+            log.debug("Sending data to server: "+data);
         });
     }else log.error({subject:"Can't send data when disconnected from server",data:data});
 }
 
-expost.socket=socket;
-
-attachListeners = function()
-{
-    socket.on('connect',onconnect);
-    socket.on('end',onend);
-    socket.on('timeout',ontimeout);
-    socket.on('error',onerror);
-    socket.on('data',communication.listenToServer);
+attachListenersToSocket = function() {
+    connection.on('connect',onconnect);
+    connection.on('end',onend);
+    connection.on('timeout',ontimeout);
+    connection.on('error',onerror);
+    connection.on('data',communication.listenToServer);
 }
 
 
@@ -64,7 +59,7 @@ disconnected = function() {
 }
 
 onconnect = function() {
-    log.info("Connected to irc server!");
+    log.info("Connected...");
     isConnected=true;
     attempts=0;
 }

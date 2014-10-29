@@ -8,7 +8,6 @@ exports.init = function(){
     processManager.setupCommunications();   //Setup Messenger speakers and listerners for inter-process communication
     processManager.start();                 //Start a forked child process which will do the actual logic of this application, while this process will keep the actual socket open.
     connectionManager.connect();
-
     //Start irc connection
     //parse line
 }
