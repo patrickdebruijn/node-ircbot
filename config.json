@@ -4,8 +4,7 @@
         "port": 6667,
         "autoReconnect": true,
         "maxRetries": 60,
-        "retryDelay": 6,
-        "autoRejoin": true
+        "retryDelay": 6
     },
     "bot": {
         "masterPassword": "",
@@ -14,10 +13,12 @@
         "user": "Katarina",
         "real": "Katarina",
         "pass": "",
-        "autoJoinChannels": ["#home"]
+        "autoJoinChannels": ["#home"],
+        "autoRestartOnFailure": true,
+        "restartDelay":10
     },
     "development": {
         "debugModus": true,
-        "debugChannel": "#testchannel"
+        "loggerChannel": "#KatarinaDevelopment"
     }
 }

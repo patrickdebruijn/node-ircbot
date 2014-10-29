@@ -16,20 +16,21 @@ exports.start = function (){
 exports.stop = function(){
     if(childprocess.connected) {
         log.info("Stopping Irc Bot...");
+        childprocess.removeAllListeners('disconnect');
         return childprocess.kill();
     } else
         return false;
 }
 
 exports.restart = function(){
-    exports.stop();
+    exports.stop(true);
     setTimeout(exports.start,100);
 }
 
 exports.setupCommunications = function(){
     if(!communication) {
         listener = messenger.createListener(9020);
-        //listener.on('ircCmd', ircCmd.executecmd);
+        listener.on('sendIrcCmd', communication.listenToBot);
         listener.on('restartBot', exports.restart);
         speaker = messenger.createSpeaker(9021);
         return communication=true;
@@ -51,11 +52,12 @@ attachListeners = function(){
     }
 }
 
-disconnected = function() {
-    childprocess.removeAllListeners('disconnect');
+disconnected = function(force) {
+    log.fatal("Irc Bot crashed...");
     childprocess.removeAllListeners('close');
     childprocess.removeAllListeners('exit');
     childprocess.removeAllListeners('error');
+    if(force==undefined && cfg.bot.autoRestartOnFailure)setTimeout(exports.start,cfg.bot.restartDelay*1000);
 }
 
 closed = function(code,signal) {

@@ -5,11 +5,11 @@ global.appDir 		    = {};
 
 var     bunyan          = require('bunyan');
 var     path            = require('path');
-var     ircClient 	    = require('./ircClient/ircClient');
+var     ircClient 	    = require('./ircClient/engine');
 
 
 exports.init = function (config) {
-    if(config==undefined) console.log('[ERROR] No config specified');
+    if(config==undefined) log.error("No config specified.");
     else {
         appDir=path.dirname(require.main.filename);  //find the root of the application
 
