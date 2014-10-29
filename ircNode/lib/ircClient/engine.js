@@ -27,6 +27,15 @@ moduleLoader = function(){
 
 }
 
+commandsLoader = function(){
+
+}
+
+fireServices = function(){
+
+}
+
+
 communication.listenToServer = function (data)
 {
     if(data==undefined)
