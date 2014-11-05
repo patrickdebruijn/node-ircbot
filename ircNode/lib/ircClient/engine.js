@@ -1,69 +1,53 @@
 //Function calling verbetem, niet via eval: http://stackoverflow.com/questions/8206453/call-function-by-string-name-on-node-js
+var processManager      = require('./processManager'),
+    connectionManager   = require('./connectionManager'),
+    fs                  = require('fs'),
+    path                = require('path');
+global.communication    = {};
+global.modules          = {};
+global.constants        = JSON.parse(fs.readFileSync('./ircNode/inc/constants.json', 'utf8')); //https://github.com/gf3/IRC-js/blob/master/lib/constants.js
 
 
-//global.ircCmd               = require('./ircCmd');
-global.communication        = {};
-var     processManager      = require('./processManager'),
-        connectionManager   = require('./connectionManager');
-
-exports.init = function(){
-    moduleLoader();
+exports.init = function () {
+    loadModules();
     processManager.setupCommunications();   //Setup Messenger speakers and listerners for inter-process communication
     processManager.start();                 //Start a forked child process which will do the actual logic of this application, while this process will keep the actual socket open.
-    connectionManager.connect();
-    //Start irc connection
-    //parse line
-}
+    connectionManager.connect();            //Connect with socket to the configured irc server
+};
 
-parseLine = function(line){
+loadModules = function () {
+    var normalizedPath = path.join(__dirname, "Modules");
+    fs.readdirSync(normalizedPath).forEach(function(file) {
+        var name = file.split(".");
+        name=name[0];
+        modules[name]=require("./Modules/" + file);
+    });
+};
 
-}
-
-processLine = function(lineObj){
-    //pass message to process manager, or to own modules.
-}
-
-moduleLoader = function(){
-
-}
-
-commandsLoader = function(){
-
-}
-
-fireServices = function(){
-
-}
-
-
-communication.listenToServer = function (data)
-{
-    if(data==undefined)
+communication.listenToServer = function (data) {
+    if (data == undefined)
         return log.error('ListenToServer: no data');
     else
-        console.log(data)
-}
+        modules['ircParser'].execute(data.toString());
+};
 
-communication.sendToServer = function (data)
-{
-    if(data==undefined)
+communication.sendToServer = function (data) {
+    if (data == undefined)
         return log.error('SendToServer: no data');
     else
         connectionManager.send(data);
-}
+};
 
-communication.listenToBot = function (data)
-{
-    if(data==undefined)
+communication.listenToBot = function (data) {
+    if (data == undefined)
         return log.error('ListenToBot: no data');
     else
         console.log(data)
-}
+};
 
-communication.speakToBot = function (subject,data)
-{
-    if(subject==undefined || data==undefined)
+communication.speakToBot = function (subject, data) {
+    if (subject == undefined || data == undefined)
         return log.error('SpeakToBot: Subject or data empty');
     else
-        processManager.send(subject,data);
-}
+        processManager.send(subject, data);
+};

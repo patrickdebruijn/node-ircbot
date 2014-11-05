@@ -3,11 +3,16 @@ var https = require("https");
 
 module.exports =
 {
-    getJSON:		function(options, onResult)
-    {
+    isNumber:		function(obj) {return !isNaN(parseFloat(obj))},			//Helper function to check if var is really a number
+    trim: function  (string) {
+        string = string.replace(/(^\s*)|(\s*$)/gi,"");
+        string = string.replace(/[ ]{2,}/gi," ");
+        string = string.replace(/\n /,"\n");
+        return string;
+    },
+    getJSON: function (options, onResult) {
         var prot = options.port == 443 ? https : http;
-        var req = prot.request(options, function(res)
-        {
+        var req = prot.request(options, function (res) {
             var output = '';
             res.setEncoding('utf8');
 
@@ -15,23 +20,23 @@ module.exports =
                 output += chunk;
             });
 
-            res.on('end', function() {
+            res.on('end', function () {
                 var obj = JSON.parse(output);
                 onResult(res.statusCode, obj);
             });
         });
 
-        req.on('error', function(err) {
+        req.on('error', function (err) {
             //res.send('error: ' + err.message);
         });
 
         req.end();
-    },
-}
+    }
+};
 
 
 //Function te remove value from array, ex: arry.remove("value");
-Array.prototype.remove = function() {
+Array.prototype.remove = function () {
     var what, a = arguments, L = a.length, ax;
     while (L && this.length) {
         what = a[--L];
@@ -40,4 +45,14 @@ Array.prototype.remove = function() {
         }
     }
     return this;
+};
+
+Object.prototype.getKeyByValue = function( value ) {
+    for( var prop in this ) {
+        if( this.hasOwnProperty( prop ) ) {
+            if( this[ prop ] === value )
+                return prop;
+        }
+    }
+    return false;
 };
