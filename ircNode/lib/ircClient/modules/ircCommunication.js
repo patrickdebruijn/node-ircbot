@@ -26,7 +26,6 @@ exports.send = function(cmd,arg) {
 
         if(typeof arg =="string") {
             var msg = constants.raw.COMMAND[cmd] + " " + arg;
-            console.log(msg);
             communication.sendToServer(msg);
         }
     } else
@@ -81,7 +80,7 @@ func.Say = function (arg) {
     if (arg[0] != undefined)
     {
         if (arg[1] != undefined)
-            send("PRIVMSG",[arg[0],arg[1]]);
+            send("PRIVMSG",arg);
         else
             log.warn('Command: [SAY](chan,msg) needs a second argument');
     } else log.warn('Command: [SAY](chan,msg) needs two arguments');
