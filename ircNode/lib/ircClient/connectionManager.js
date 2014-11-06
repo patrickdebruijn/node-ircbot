@@ -35,9 +35,8 @@ exports.reconnect = function () {
 
 exports.send = function (data) {
     if (isConnected) {
-        connection.write(data + '\r\n', 'ascii', function () {
-            log.debug("SEND TO IRC: " + data);
-        });
+        connection.write(data + '\r\n');
+        log.debug("SEND TO IRC: " + data);
     } else log.error({subject: "Can't send data when disconnected from server", data: data});
 };
 

@@ -5,8 +5,8 @@ var processManager      = require('./processManager'),
     path                = require('path');
 global.communication    = {};
 global.modules          = {};
-global.constants        = JSON.parse(fs.readFileSync('./ircNode/inc/constants.json', 'utf8')); //https://github.com/gf3/IRC-js/blob/master/lib/constants.js
-
+global.constants        = JSON.parse(fs.readFileSync('./ircNode/inc/constants.json', 'utf8')); //https://github.com/gf3/IRC-js/blob/master/lib/constants.js //https://www.alien.net.au/irc/irc2numerics.html
+global.ircColor         = require('irc-colors'); //https://github.com/fent/irc-colors.js
 
 exports.init = function () {
     loadModules();

@@ -143,6 +143,8 @@
             "TRACELOG": "261",
             "TRACEEND": "262",
             "TRYAGAIN": "263",
+            "LOCALUSERS": "265",
+            "GLOBALUSERS":"266",
             "AWAY": "301",
             "USERHOST": "302",
             "ISON": "303",

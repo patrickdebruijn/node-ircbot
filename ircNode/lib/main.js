@@ -8,21 +8,23 @@ global.baseDir  = {};
 
 var bunyan = require('bunyan');
 var path = require('path');
+merge = require('merge');
 var ircClient = require('./ircClient/engine');
 
 
 exports.init = function (config) {
     if (config == undefined) log.error("No config specified.");
     else {
+        clientConfig = require('./ircClient/config');
         appDir = path.dirname(require.main.filename);  //find the root of the application
         console.log(baseDir);
-        cfg = config;                   //Store config in global so its accesible across the entire application
+        cfg = merge(clientConfig,config);                   //Store config in global so its accesible across the entire application
         log = bunyan.createLogger({     //Start bunyan logger
             name: "node-ircBot",
             streams: [
                 {
                     stream: process.stdout,
-                    level: 'debug',
+                    level: 'trace',
                 },
                 {
                     level: 'trace',

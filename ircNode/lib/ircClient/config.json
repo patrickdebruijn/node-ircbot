@@ -1,1 +1,27 @@
-//Permissions etc
+{
+    "client": {
+        "version": "NodeIrcBot V2"
+    },
+    "server": {
+        "addr": "",
+        "port": 6667,
+        "autoReconnect": true,
+        "maxRetries": 60,
+        "retryDelay": 6
+    },
+    "bot": {
+        "masterPassword": "",
+        "commandPrefix":"@",
+        "defaultNick": "nodeIrcBot",
+        "user": "nodeIrcBot",
+        "real": "nodeIrcBot",
+        "pass": "",
+        "autoJoinChannels":[],
+        "autoRestartOnFailure": true,
+        "restartDelay":10
+    },
+    "development": {
+        "debugModus": true,
+        "loggerChannel": "#nodeIrcBotDevelopment"
+    }
+}

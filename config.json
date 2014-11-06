@@ -13,7 +13,7 @@
         "user": "Katarina",
         "real": "Katarina",
         "pass": "",
-        "autoJoinChannels":["#home"],
+        "autoJoinChannels":[],
         "autoRestartOnFailure": true,
         "restartDelay":10
     },
