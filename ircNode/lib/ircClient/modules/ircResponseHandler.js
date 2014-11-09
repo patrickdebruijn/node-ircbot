@@ -1,5 +1,4 @@
-var state       = {},
-    handlers    = {};
+var handlers    = {};
 
 exports.state = state;
 
@@ -17,36 +16,24 @@ exports.fire = function(name,arg) {
     }
 };
 
-send = function(cmd,arg) {
-    if(constants.raw.COMMAND[cmd]!=undefined)
-    {
-        if(typeof arg =="Array")arg = arg.join(" ");
-        var msg = constants.raw.COMMAND[cmd] + " " + arg;
-        communication.sendToServer(msg);
-    } else
-        log.error('Send irc command: '+cmd+' is Undefined');
+handlers.PINGSTART = function(arg) {
+    modules['ircCommunication'].send("PONG",arg[1],true);
 };
-
+//@TODO FIX IT ZODAT HIJ GEWOON EEN PING RESPONSE GEEFT
 handlers.PING = function(arg) {
-    modules['ircCommunication'].send("PONG",arg[1]);
+    modules['ircCommunication'].fire('say',[arg.sender,'\001PONG '+arg.message[1]]);
 };
 
-handlers.PRIVMSG = function(arg) {
-    //SEND TO USER MODULE FOR SESSION MANAGEMENT
-    var session = modules['ircUsers'].getSession(arg);
-    if(arg.message[0]!=undefined)
-    {
-        var cmd=arg.message[0].replace(/[^A-Za-z 0-9 \.,\?""!@#\$%\^&\*\(\)-_=\+;:<>\/\\\|\}\{\[\]`~]*/g, '') ;
-        if (constants.raw.COMMAND[cmd] != undefined) exports.fire(cmd,arg)
-    }
 
-    //CHECK IF FROM USER IS ON IGNORE LIST
-    //CHECK FOR FIRST WORD IF IT IS A IRC COMMAND,
-    //
+handlers.SNOTICE = function(arg) {
+    //@TODO handle server notices
 };
-
+//@TODO FIX IT ZODAT HIJ GEWOON EEN VERSION RESPONSE GEEFT
 handlers.VERSION = function(arg) {
-    modules['ircCommunication'].send("PRIVMSG",'sdsd');
+    modules['ircCommunication'].fire('say',[arg.sender,'\001VERSION '+cfg.client.version+'\001']);
 };
 
 //@TODO uitbreiden: https://github.com/fent/node-irc/blob/master/lib/irc.js
+//@TODO Meer CTCP replies maken
+//@TODO Detect NICK changes etc
+//@TODO check of onze client voldoet aan dit script: https://github.com/nornagon/ircv/blob/master/test/irc_test.coffee

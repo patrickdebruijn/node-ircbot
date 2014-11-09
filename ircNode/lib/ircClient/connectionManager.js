@@ -46,6 +46,7 @@ attachListenersToSocket = function () {
     connection.on('timeout', ontimeout);
     connection.on('error', onerror);
     connection.on('data', communication.listenToServer);
+    //@TODO crash handling verbetere, reload na crash? Email alert/pushover alert?
 };
 
 
@@ -61,7 +62,7 @@ onconnect = function () {
     modules['ircCommunication'].fire("Authenticate");//Authenticate with the irc server
     setTimeout(function(){
         modules['ircCommunication'].fire("AutoJoinChannels");
-    },1000);
+    },2000);
 
 };
 

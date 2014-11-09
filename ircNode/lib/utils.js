@@ -3,7 +3,10 @@ var https = require("https");
 
 module.exports =
 {
-    isNumber:		function(obj) {return !isNaN(parseFloat(obj))},			//Helper function to check if var is really a number
+    isNumber: function(obj) {return !isNaN(parseFloat(obj))},			//Helper function to check if var is really a number
+    isArray: function (obj) {
+        return Object.prototype.toString.call(obj) === '[object Array]';
+    },
     trim: function  (string) {
         string = string.replace(/(^\s*)|(\s*$)/gi,"");
         string = string.replace(/[ ]{2,}/gi," ");

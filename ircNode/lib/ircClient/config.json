@@ -1,7 +1,4 @@
 {
-    "client": {
-        "version": "NodeIrcBot V2"
-    },
     "server": {
         "addr": "",
         "port": 6667,
@@ -23,5 +20,18 @@
     "development": {
         "debugModus": true,
         "loggerChannel": "#nodeIrcBotDevelopment"
+    },
+    "client": {
+        "version": "NodeIrcBot:V2:vps.nodeircbot.com",
+        "permissions" : {
+            "groups": ["admin","mod","guest"],
+            "commands": {
+                "AUTH":{
+                    "groups":[],
+                    "help": "Authorize yourself",
+                    "arg": ["username","password"]
+                }
+            }
+        }
     }
 }

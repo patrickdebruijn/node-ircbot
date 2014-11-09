@@ -1,4 +1,3 @@
-//Function calling verbetem, niet via eval: http://stackoverflow.com/questions/8206453/call-function-by-string-name-on-node-js
 var processManager      = require('./processManager'),
     connectionManager   = require('./connectionManager'),
     fs                  = require('fs'),
@@ -7,6 +6,7 @@ global.communication    = {};
 global.modules          = {};
 global.constants        = JSON.parse(fs.readFileSync('./ircNode/inc/constants.json', 'utf8')); //https://github.com/gf3/IRC-js/blob/master/lib/constants.js //https://www.alien.net.au/irc/irc2numerics.html
 global.ircColor         = require('irc-colors'); //https://github.com/fent/irc-colors.js
+global.state            = {isAuthed:false,isAutoJoined:false,isAway:false,nick:false};
 
 exports.init = function () {
     loadModules();
