@@ -109,4 +109,3 @@ setInterval(sendQueue,1000)
 //@TODO: Uitbreiden met: https://github.com/slate/slate-irc/tree/master/lib/plugins
 //@TODO: Maak nick serv login en regist commandos
 //@TODO: WHOIS COMMANDO FIXEN http://www.irchelp.org/irchelp/irctutorial.html http://en.wikipedia.org/wiki/List_of_Internet_Relay_Chat_commands
-//@TODO Hernoem naar ircRequestHandler

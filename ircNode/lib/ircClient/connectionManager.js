@@ -59,10 +59,13 @@ onconnect = function () {
     log.info("IrcClient is connected");
     isConnected = true;
     attempts = 0;
-    modules['ircCommunication'].fire("Authenticate");//Authenticate with the irc server
+
     setTimeout(function(){
-        modules['ircCommunication'].fire("AutoJoinChannels");
-    },2000);
+        modules['ircRequests'].fire("Authenticate");//Authenticate with the irc server
+        setTimeout(function(){
+            modules['ircRequests'].fire("AutoJoinChannels");
+        },750);
+    },750);
 
 };
 

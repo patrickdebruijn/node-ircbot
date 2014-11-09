@@ -7,12 +7,17 @@ var commands    = {},
 exports.state = state;
 
 exports.fire = function(name,arg) {
+    var session = modules['ircUsers'].getSession(arg);  //Get Session info and check if the sender isn't on the ignore list
+    console.log(arg);
+    //SEND arg and session to ircSats module to gather stats and velocity
+    //Is it a command?  check if the command is for a plugin or for the core, and send it to the correct handler.
+    //In this handler, check the permissions with virgin-acl https://github.com/djvirgen/virgen-acl
 
     name = name.toLowerCase();
     if(commands[name]!=undefined)
         commands[name](arg);
     else
-        log.error('Fire command: '+name+' is Undefined');
+        log.error('Fire ccommand: '+name+' is Undefined');
 };
 
 

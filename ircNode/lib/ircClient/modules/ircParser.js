@@ -10,20 +10,17 @@ exports.execute = function(data){
     var response = data.split('\r\n'),  //Split a reponse in lines
         i;
     if (data.match('^PING')) {  //Intercept the response line if it starts with PING and dispatch a PONG command to keep te connection alive
-        modules['ircResponseHandler'].fire("PINGSTART",data.split(" "));
+        modules['ircResponseHandler'].catch("PINGSTART",data.split(" "));
     } else {
         for (i = response.length; i--;) {
             responseLine = utils.trim(response[i]);
             if (responseLine != '') {
-                responseLine = parse(response[i].split(" "));
-                log.trace("RECEIVING: "+responseLine.response);
-                handleResponseLine(responseLine);
+                lineObj = parse(response[i].split(" "));
+                processLine(lineObj);
             }
         }
     }
 };
-
-
 
 parse = function(response) {
     var sender,
@@ -86,22 +83,15 @@ parse = function(response) {
             cmdType=SYSTEM;
         }
         else if(cmd!=undefined && cmd!='') {
+            //@TODO, maak het zo dat @CONTROL als prefix dient
             if(receiver=='channel')
             {
                 if(cmd.indexOf(cfg.bot.commandPrefix)==0)
                 {
                     cmd=cmd.substr(1);
-                    if(cfg.client.permissions.commands[cmd]!=undefined)
-                    {
-                        cmdType=BOT;
-                    }
+                    if(cfg.client.permissions.commands[cmd]!=undefined)cmdType=BOT;
                 }
-            } else {
-                if(cfg.client.permissions.commands[cmd]!=undefined)
-                {
-                    cmdType=BOT;
-                }
-            }
+            } else if(cfg.client.permissions.commands[cmd]!=undefined)cmdType=BOT;
         }
         if(!cmdType)cmd=false;
     }
@@ -123,37 +113,42 @@ parse = function(response) {
     return returnObject;
 };
 
-handleResponseLine = function (line) {
-
-    switch(line.type) {
-        case 'error':
-            modules['ircLogger'].log("error","["+line.method+"] "+line.message.join(" "));
-            log.warn("IRCSERVER: ["+line.method+"]: "+line.message.join(" "));
-
-            //@TODO create een ircErrorHandler.js
-            break;
-        case 'reply':
-            //@TODO Route replies back reponseHandler and/or to ircBot when needed
-            //@TODO Listen to replies to detect if a command is executed correcly <-- Communication needs to be extended with a registry and callback functionality + Buffer function for multiLine reply
-            break;
-        case 'command':
-            if(line.botCommandType=='system') //Check if response a PRIVMSG or NOTICE, if not send command to repsonse handler
-            {
-                modules['ircResponseHandler'].fire(line.botCommand,line);
-                modules['ircLogger'].log("info","["+line.botCommand+"] "+line.response);
-            } else if(line.method!='PRIVMSG' && line.method!='NOTICE') {
-                modules['ircResponseHandler'].fire(line.method,line);
-                modules['ircLogger'].log("info","["+line.method+"] "+line.response);
-            } else {
-                //@TODO Make reponse handlers when things need to be updated, (user modus, NICK, etc)
-                var session = modules['ircUsers'].getSession(line);  //Get Session info and check if the sender isn't on the ignore list
-                console.log(line);
-                //SEND arg and session to ircSats module to gather stats and velocity
-                //Is it a command?  check if the command is for a plugin or for the core, and send it to the correct handler.
-                //In this handler, check the permissions with virgin-acl https://github.com/djvirgen/virgen-acl
-            }
-            break;
+processLine = function (line) {
+    if(line.type!=undefined) {
+        switch (line.type) {
+            case 'error':
+                modules['ircErrorHandler'].catch(line.method, line);
+                modules['ircLogger'].log("error", "[" + line.method + "] " + line.message.join(" "));
+                log.warn("IRCSERVER: [ERROR]<" + line.method + ">: " + line.message.join(" "));
+                break;
+            case 'reply':
+                modules['ircResponseHandler'].catch(line.method, line);
+                modules['ircLogger'].log("debug", "[REPLY]<" + line.method + "> " + line.message.join(" "));
+                log.debug("IRCSERVER: [" + line.method + "]: " + line.message.join(" "));
+                break;
+            case 'command':
+                if (line.botCommandType == 'system') //Check if response a PRIVMSG or NOTICE, if not send command to repsonse handler
+                {
+                    modules['ircResponseHandler'].catch(line.botCommand, line);
+                    modules['ircLogger'].log("info", "[IRC]<" + line.botCommand + ">" + line.response);
+                    log.info("IRCSERVER: [IRC]<" + line.method + ">: " + line.message.join(" "));
+                } else if (line.method != 'PRIVMSG') { //@TODO uitzoeken hoe ik notices van snotices kan onderscheiden
+                    modules['ircResponseHandler'].catch(line.method, line);
+                    modules['ircLogger'].log("info", "[IRC]<" + line.method + "> " + line.response);
+                    log.info("IRCSERVER: [IRC]<" + line.method + ">: " + line.message.join(" "));
+                } else {
+                    modules['ircLogger'].log("info", "[CMD]<" + line.method + "> " + line.response);
+                    log.info("IRCSERVER: [CMD]<" + line.method + ">: " + line.message.join(" "));
+                    modules['ircCommands'].fire(line.method, line);
+                }
+                break;
+            case 'other':
+                break;
+            default:
+                modules['ircLogger'].log("info", "[???]<" + line.method + "> " + line.response);
+                log.info("IRCSERVER: [???]<" + line.method + ">: " + line.message.join(" "));
+                modules['ircResponseHandler'].catch(line.method,line);
+        }
     }
-    if(line.type!=undefined && line.type!='other')modules['ircResponseHandler'].fire(line.method,line); //
 };
 //regexp msg parser: https://github.com/bleakgadfly/node-irc/blob/master/lib/client.js / https://github.com/gf3/IRC-js/blob/master/lib/message.js

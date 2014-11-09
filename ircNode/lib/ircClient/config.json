@@ -15,7 +15,10 @@
         "pass": "",
         "autoJoinChannels":[],
         "autoRestartOnFailure": true,
-        "restartDelay":10
+        "restartDelay":10,
+        "owners": {
+            "admin":""
+        }
     },
     "development": {
         "debugModus": true,
@@ -30,6 +33,9 @@
                     "groups":[],
                     "help": "Authorize yourself",
                     "arg": ["username","password"]
+                },
+                "CONTROL": {
+
                 }
             }
         }
