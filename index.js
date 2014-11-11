@@ -4,5 +4,6 @@ nodeIrcBot = require('./ircNode');
 nodeIrcBot.init(config);
 
 //@TODO Weather announcements
-//@TODO IZJE: Ignore hoofdletters, alias functie, velocity, (Reageren op, Ik zal jou eens ...
+//@TODO IZJE: Ignore hoofdletters, alias functie, velocity, (Reageren op, Ik zal jou eens ... https://github.com/NaturalNode/natural  soortgeljke werkwoorden zoeken
 //@TODO RIJM bot, mcdonals coupons bot, YO feature,
+//@TODO AIML BOT https://github.com/dotcypress/aiml

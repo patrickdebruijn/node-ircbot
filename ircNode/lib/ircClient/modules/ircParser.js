@@ -2,6 +2,7 @@ var prefixes    = /^:[!,./\?@`]/;
 const COMMAND   = 'command';
 const ERROR     = 'error';
 const REPLY     = 'reply';
+const OTHER     = 'other';
 const SYSTEM    = 'system';
 const BOT       = 'bot';
 const PLUGIN    = 'plugin';
@@ -34,13 +35,20 @@ parse = function(response) {
         recipient=false,
         message=false,
         cmd=false,
-        nick;
+        nick=false,
+        name=false,
+        host=false;
     // In case sender is a nick!user@host, parse the nick.
     try {
-        formatUserhost = new RegExp(/\b[^]*(.*?)!/);                // :nick!user@host =>
-        nick = formatUserhost.exec(response[0]);                    // [n,i,c,k,!] =>
-        formatNick = nick.join("");                                 // nick! =>
-        sender = (formatNick.substring(0,(formatNick.length-1)));   // nick => Done.
+        var i = response[0].indexOf('!');
+        if (-1 != i) nick = response[0].slice(1, i);
+
+        var d = response[0].indexOf('@');
+        if (-1 != d)  name = response[0].slice(i+1, d);
+
+        if (-1 != d) host = response[0].slice(d+1);
+
+        var sender = name+"@"+host;
     } catch(e) {
         sender = 'server';
     }
@@ -65,7 +73,7 @@ parse = function(response) {
         }
     }
 
-    if(type==undefined)type="other"; //@TODO Maybe te string was part of the last line, should we buffer these things?
+    if(type==undefined)type=OTHER; //@TODO Maybe te string was part of the last line, should we buffer these things?
 
     var message = response.slice(3);
     if(message[0]!=undefined && message[0]!='')message[0]=utils.trim(message[0].substr(1)); //Strip the devide : from the message
@@ -91,27 +99,36 @@ parse = function(response) {
 
             if(cmd!=false)
             {
-                if(cmd==cfg.client.systemCommand.toUpperCase())
-                    cmdType=BOT;
+                if(cmd==cfg.client.systemCommand.toUpperCase()) {
+                    cmdType = BOT;
+                    cmd = message[1];
+                }
                 else
                     cmdType=PLUGIN;
             }
         }
     }
-    //@TODO: Duidelijkere structuur
     var returnObject = {
         method: response[1],
-        forMe:forMe,
         type:type,
-        receiver: receiver,
-        recipient:response[2],
-        sender: sender,
-        botCommand:cmd,
-        botCommandType:cmdType,
-        response:response.join(" "),
-        date: new Date(),
-        message: message
-
+        sender:{
+            name:name,
+            nick:nick,
+            host:host,
+            ident:sender
+        },
+        receiver:{
+            forMe:forMe,
+            type:receiver,
+            recipient:response[2]
+        },
+        response:{
+            cmd:cmd,
+            type:cmdType,
+            content:response.join(" "),
+            message: message
+        },
+        date: new Date()
     };
 
     return returnObject;
@@ -120,66 +137,66 @@ parse = function(response) {
 processLine = function (line) {
     if(line.type!=undefined) {
         switch (line.type) { //Parse line from irc server
-            case 'error': //Handle irc error messages
+            case ERROR: //Handle irc error messages
                 modules['ircErrorHandler'].catch(line.method, line);
-                modules['ircLogger'].log("error", "[" + line.method + "] " + line.message.join(" "));
-                log.warn("IRCSERVER: [ERROR]<" + line.method + ">: " + line.message.join(" "));
+                modules['ircLogger'].log("error", "[" + line.method + "] " + line.response.message.join(" "));
+                log.warn("IRCSERVER: [ERROR]<" + line.method + ">: " + line.response.message.join(" "));
                 break;
-            case 'reply': //Handle irc reply messages
+            case REPLY: //Handle irc reply messages
                 modules['ircResponseHandler'].catch(line.method, line);
-                modules['ircLogger'].log("debug", "[REPLY]<" + line.method + "> " + line.message.join(" "));
-                log.debug("IRCSERVER: [" + line.method + "]: " + line.message.join(" "));
+                modules['ircLogger'].log("debug", "[REPLY]<" + line.method + "> " + line.response.message.join(" "));
+                log.debug("IRCSERVER: [" + line.method + "]: " + line.response.message.join(" "));
                 break;
-            case 'command': //Handle irc commands messages
-                if (line.botCommandType == SYSTEM) //Check line has an irc commando
+            case COMMAND: //Handle irc commands messages
+                if (line.response.type == SYSTEM) //Check line has an irc commando
                 {
-                    modules['ircResponseHandler'].catch(line.botCommand, line);
-                    modules['ircLogger'].log("info", "[IRC]<" + line.botCommand + ">" + line.response);
-                    log.info("IRCSERVER: [IRC]<" + line.method + ">: " + line.message.join(" "));
+                    modules['ircResponseHandler'].catch(line.response.cmd, line);
+                    modules['ircLogger'].log("info", "[IRC]<" + line.response.cmd + ">" + line.response.content);
+                    log.info("IRCSERVER: [IRC]<" + line.method + ">: " + line.response.message.join(" "));
                 } else if(line.method == 'PRIVMSG'){ //@TODO uitzoeken hoe ik notices van snotices kan onderscheiden
                     processPrivMsg(line);
-                    modules['ircLogger'].log("trace", "[PRIVMSG] " + line.response);
-                    log.trace("IRCSERVER: [PRIVMSG] " + line.message.join(" "));
+                    modules['ircLogger'].log("trace", "[PRIVMSG] " + line.response.content);
+                    log.trace("IRCSERVER: [PRIVMSG] " + line.response.message.join(" "));
                 } else { //Other irc commando's like VERSION
                     modules['ircResponseHandler'].catch(line.method, line);
-                    modules['ircLogger'].log("info", "[IRC]<" + line.method + "> " + line.response);
-                    log.info("IRCSERVER: [IRC]<" + line.method + ">: " + line.message.join(" "));
+                    modules['ircLogger'].log("info", "[IRC]<" + line.method + "> " + line.response.content);
+                    log.info("IRCSERVER: [IRC]<" + line.method + ">: " + line.response.message.join(" "));
                 }
                 break;
-            case 'other': //???
-                modules['ircLogger'].log("warn", "[OTHER]" + line.response);
+            case OTHER: //???
+                modules['ircLogger'].log("warn", "[OTHER]" + line.response.content);
                 break;
             default://Try to andle any unknown message
                 modules['ircResponseHandler'].catch(line.method,line);
-                modules['ircLogger'].log("info", "[???]<" + line.method + "> " + line.response);
-                log.warn("IRCSERVER: [???]<" + line.method + ">: " + line.message.join(" "));
+                modules['ircLogger'].log("info", "[???]<" + line.method + "> " + line.response.content);
+                log.warn("IRCSERVER: [???]<" + line.method + ">: " + line.response.message.join(" "));
         }
     }
 };
 
 processPrivMsg = function(line)
 {
-    var session = modules['ircUsers'].getSession(line);  //Get Session info and check if the sender isn't on the ignore list
+    line.session = modules['ircUsers'].getSession(line);  //Get Session info and check if the sender isn't on the ignore list
     modules['ircStats'].analyse(line); //send msg to irc stats for raw logging and velocity and channel stats
 
-    if(line.botCommandType == BOT && cfg.client.permissions.commands[line.botCommand]!=undefined) //Check if this line is an existing control command
+    if(line.response.type == BOT && cfg.client.permissions.commands[line.response.cmd]!=undefined) //Check if this line is an existing control command
     {
-        if(modules['ircUsers'].getPermission(session,line.botCommand))
+        if(modules['ircUsers'].getPermission(line))
         {
-            //@TODO DEZE LOGGING VERBETEREN, berichten weergeven of command gelukt is
-            modules['ircCommands'].fire(line.botCommand, line);
-            modules['ircLogger'].log("info", "[CONTROL]<" + line.botCommand + "> " + line.response);
-            log.info("IRCSERVER: [CONTROL]<" + line.botCommand + ">: " + line.message.join(" "));
+            //@TODO DEZE LOGGING VERBETEREN, berichten weergeven of command gelukt is en door wie
+            modules['ircCommands'].fire(line.response.cmd, line);
+            modules['ircLogger'].log("info", "[CONTROL]<" + line.response.cmd + "> " + line.response.content);
+            log.info("IRCSERVER: [CONTROL]<" + line.response.cmd + ">: " + line.response.message.join(" "));
         } else {
             //@TODO DEZE LOGGING VERBETEREN, berichten weergeven of command gelukt is
-            modules['ircLogger'].log("warn", "[CONTROL]<" + line.botCommand + "> " + line.response);
-            log.warn("IRCSERVER: [CONTROL]<" + line.botCommand + ">: " + line.message.join(" "));
+            modules['ircLogger'].log("warn", "[CONTROL]<" + line.response.cmd + "> " + line.response.content);
+            log.warn("IRCSERVER: [CONTROL]<" + line.response.cmd + ">: " + line.response.message.join(" "));
         }
-    } else if(line.botCommandType == PLUGIN)
+    } else if(line.response.type == PLUGIN)
     {
         communication.speakToBot("IRCCMD",line);
-        modules['ircLogger'].log("info", "[PLUGIN]<" + line.botCommand + "> " + line.response);
-        log.info("IRCSERVER: [PLUGIN]<" + line.botCommand + ">: " + line.message.join(" "));
+        modules['ircLogger'].log("info", "[PLUGIN]<" + line.response.cmd + "> " + line.response.content);
+        log.info("IRCSERVER: [PLUGIN]<" + line.response.cmd + ">: " + line.response.message.join(" "));
     }
 
     //@TODO always send the raw message to irc bot for the services

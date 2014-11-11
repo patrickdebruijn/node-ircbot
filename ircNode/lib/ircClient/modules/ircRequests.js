@@ -17,7 +17,7 @@ exports.fire = function(name,arg) {
     else
         log.error('Fire request: '+name+' is Undefined');
 };
-
+//@TODO dont send data untill welcome cmd
 exports.send = function(cmd,arg,force) {
     if(constants.raw.COMMAND[cmd]!=undefined)
     {
