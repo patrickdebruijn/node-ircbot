@@ -72,7 +72,7 @@ func.autojoinchannels = function() {
         for (var i = 0; i < cfg.bot.autoJoinChannels.length; i++)
             send("JOIN", cfg.bot.autoJoinChannels[i],true);
         if (cfg.development.loggerChannel != '' && cfg.development.loggerChannel != false && cfg.development.loggerChannel != undefined)send("JOIN", cfg.development.loggerChannel,true);
-        state.isAutoJoined=true;
+        state.isAutoJoined=true;  //@TODO state veranderingen hangen aan een reponse ipv vannuit gaan dat het goed gaat
     } else
         log.warn('You have allready auto joined...');
 };

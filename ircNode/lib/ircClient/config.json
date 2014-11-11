@@ -26,6 +26,7 @@
     },
     "client": {
         "version": "NodeIrcBot:V2:vps.nodeircbot.com",
+        "systemCommand": "control",
         "permissions" : {
             "groups": ["admin","mod","guest"],
             "commands": {
@@ -34,7 +35,46 @@
                     "help": "Authorize yourself",
                     "arg": ["username","password"]
                 },
-                "CONTROL": {
+                "REGISTER": {
+
+                },
+                "LOGIN": {
+
+                },
+                "REGISTER": {
+
+                },
+                "RELOAD": {
+
+                },
+                "RESTART": {
+
+                },
+                "SAY": {
+
+                },
+                "JOIN": {
+
+                },
+                "PART": {
+
+                },
+                "SHOUT": {
+
+                },
+                "OP": {
+
+                },
+                "DEOP": {
+
+                },
+                "UPTIME": {
+
+                },
+                "STATS": {
+
+                },
+                "REGISTER": {
 
                 }
             }

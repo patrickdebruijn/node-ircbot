@@ -77,24 +77,28 @@ parse = function(response) {
     if(type==COMMAND && message[0]!=undefined) //Get first word of the message
     {
         //@TODO VIND een manier om wel die unicode mee te matchen zodat VERSION in chat niet meegmatched word.
-        var cmd=message[0].replace(/[^A-Za-z 0-9 \.,\?""!@#\$%\^&\*\(\)-_=\+;:<>\/\\\|\}\{\[\]`~]*/g, '').toUpperCase(); //Filter non ascii out so we can read it in plain text
-        if (constants.raw.COMMAND[cmd] != undefined){
-            cmd=constants.raw.COMMAND[cmd];
+        var tmpCmd=message[0].replace(/[^A-Za-z 0-9 \.,\?""!@#\$%\^&\*\(\)-_=\+;:<>\/\\\|\}\{\[\]`~]*/g, '').toUpperCase(); //Filter non ascii out so we can read it in plain text
+        if (constants.raw.COMMAND[tmpCmd] != undefined){
+            cmd=constants.raw.COMMAND[tmpCmd];
             cmdType=SYSTEM;
         }
-        else if(cmd!=undefined && cmd!='') {
-            //@TODO, maak het zo dat @CONTROL als prefix dient
+        else if(tmpCmd!=undefined && tmpCmd!='') {
             if(receiver=='channel')
             {
-                if(cmd.indexOf(cfg.bot.commandPrefix)==0)
-                {
-                    cmd=cmd.substr(1);
-                    if(cfg.client.permissions.commands[cmd]!=undefined)cmdType=BOT;
-                }
-            } else if(cfg.client.permissions.commands[cmd]!=undefined)cmdType=BOT;
+                if(tmpCmd.indexOf(cfg.bot.commandPrefix)==0)cmd=tmpCmd.substr(1);
+            } else
+                cmd=tmpCmd;
+
+            if(cmd!=false)
+            {
+                if(cmd==cfg.client.systemCommand.toUpperCase())
+                    cmdType=BOT;
+                else
+                    cmdType=PLUGIN;
+            }
         }
-        if(!cmdType)cmd=false;
     }
+    //@TODO: Duidelijkere structuur
     var returnObject = {
         method: response[1],
         forMe:forMe,
@@ -115,40 +119,68 @@ parse = function(response) {
 
 processLine = function (line) {
     if(line.type!=undefined) {
-        switch (line.type) {
-            case 'error':
+        switch (line.type) { //Parse line from irc server
+            case 'error': //Handle irc error messages
                 modules['ircErrorHandler'].catch(line.method, line);
                 modules['ircLogger'].log("error", "[" + line.method + "] " + line.message.join(" "));
                 log.warn("IRCSERVER: [ERROR]<" + line.method + ">: " + line.message.join(" "));
                 break;
-            case 'reply':
+            case 'reply': //Handle irc reply messages
                 modules['ircResponseHandler'].catch(line.method, line);
                 modules['ircLogger'].log("debug", "[REPLY]<" + line.method + "> " + line.message.join(" "));
                 log.debug("IRCSERVER: [" + line.method + "]: " + line.message.join(" "));
                 break;
-            case 'command':
-                if (line.botCommandType == 'system') //Check if response a PRIVMSG or NOTICE, if not send command to repsonse handler
+            case 'command': //Handle irc commands messages
+                if (line.botCommandType == SYSTEM) //Check line has an irc commando
                 {
                     modules['ircResponseHandler'].catch(line.botCommand, line);
                     modules['ircLogger'].log("info", "[IRC]<" + line.botCommand + ">" + line.response);
                     log.info("IRCSERVER: [IRC]<" + line.method + ">: " + line.message.join(" "));
-                } else if (line.method != 'PRIVMSG') { //@TODO uitzoeken hoe ik notices van snotices kan onderscheiden
+                } else if(line.method == 'PRIVMSG'){ //@TODO uitzoeken hoe ik notices van snotices kan onderscheiden
+                    processPrivMsg(line);
+                    modules['ircLogger'].log("trace", "[PRIVMSG] " + line.response);
+                    log.trace("IRCSERVER: [PRIVMSG] " + line.message.join(" "));
+                } else { //Other irc commando's like VERSION
                     modules['ircResponseHandler'].catch(line.method, line);
                     modules['ircLogger'].log("info", "[IRC]<" + line.method + "> " + line.response);
                     log.info("IRCSERVER: [IRC]<" + line.method + ">: " + line.message.join(" "));
-                } else {
-                    modules['ircLogger'].log("info", "[CMD]<" + line.method + "> " + line.response);
-                    log.info("IRCSERVER: [CMD]<" + line.method + ">: " + line.message.join(" "));
-                    modules['ircCommands'].fire(line.method, line);
                 }
                 break;
-            case 'other':
+            case 'other': //???
+                modules['ircLogger'].log("warn", "[OTHER]" + line.response);
                 break;
-            default:
-                modules['ircLogger'].log("info", "[???]<" + line.method + "> " + line.response);
-                log.info("IRCSERVER: [???]<" + line.method + ">: " + line.message.join(" "));
+            default://Try to andle any unknown message
                 modules['ircResponseHandler'].catch(line.method,line);
+                modules['ircLogger'].log("info", "[???]<" + line.method + "> " + line.response);
+                log.warn("IRCSERVER: [???]<" + line.method + ">: " + line.message.join(" "));
         }
     }
 };
-//regexp msg parser: https://github.com/bleakgadfly/node-irc/blob/master/lib/client.js / https://github.com/gf3/IRC-js/blob/master/lib/message.js
+
+processPrivMsg = function(line)
+{
+    var session = modules['ircUsers'].getSession(line);  //Get Session info and check if the sender isn't on the ignore list
+    modules['ircStats'].analyse(line); //send msg to irc stats for raw logging and velocity and channel stats
+
+    if(line.botCommandType == BOT && cfg.client.permissions.commands[line.botCommand]!=undefined) //Check if this line is an existing control command
+    {
+        if(modules['ircUsers'].getPermission(session,line.botCommand))
+        {
+            //@TODO DEZE LOGGING VERBETEREN, berichten weergeven of command gelukt is
+            modules['ircCommands'].fire(line.botCommand, line);
+            modules['ircLogger'].log("info", "[CONTROL]<" + line.botCommand + "> " + line.response);
+            log.info("IRCSERVER: [CONTROL]<" + line.botCommand + ">: " + line.message.join(" "));
+        } else {
+            //@TODO DEZE LOGGING VERBETEREN, berichten weergeven of command gelukt is
+            modules['ircLogger'].log("warn", "[CONTROL]<" + line.botCommand + "> " + line.response);
+            log.warn("IRCSERVER: [CONTROL]<" + line.botCommand + ">: " + line.message.join(" "));
+        }
+    } else if(line.botCommandType == PLUGIN)
+    {
+        communication.speakToBot("IRCCMD",line);
+        modules['ircLogger'].log("info", "[PLUGIN]<" + line.botCommand + "> " + line.response);
+        log.info("IRCSERVER: [PLUGIN]<" + line.botCommand + ">: " + line.message.join(" "));
+    }
+
+    //@TODO always send the raw message to irc bot for the services
+};
