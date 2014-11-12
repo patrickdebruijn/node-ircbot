@@ -1,5 +1,5 @@
-var sessionSchema,
-    session;
+var sessionSchema   = false,
+    session         = false;
 
 exports.init = function () {
     if (state.dbConnected) {
@@ -26,7 +26,7 @@ exports.init = function () {
 
         });
 
-        //@TODO functies aan schema toevoegen voor easy gebruik
+        //@TODO static functies aan schema toevoegen voor easy gebruik
 
         session = db.model('Sessions', sessionScheme)
     } else
@@ -36,10 +36,16 @@ exports.init = function () {
 
 exports.getSession = function (line) {
 
-    if(state.dbConnected)
+    if(line.sender!=false && line.sender.nick != false && state.dbConnected && sessionSchema!=false)
     {
+        sessionSchema.find({ident: line.sender.ident}, function(err,session)
+        {
+            console.log(line);
+            console.log(err);
+            console.log(session);
 
-        console.log(line);
+        });
+
         return true;
     }
     //If !ident return false;

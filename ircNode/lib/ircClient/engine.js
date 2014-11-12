@@ -11,8 +11,8 @@ var processManager = require('./processManager'),
     connectionManager = require('./connectionManager'),
     fs = require('fs'),
     path = require('path'),
-    db = require('mongoose');
-global.db = false
+    mongoose = require('mongoose');
+global.db = false;
 global.communication = {};
 global.modules = {};
 global.constants = JSON.parse(fs.readFileSync('./ircNode/inc/constants.json', 'utf8')); //https://github.com/gf3/IRC-js/blob/master/lib/constants.js //https://www.alien.net.au/irc/irc2numerics.html
@@ -53,14 +53,16 @@ loadModules = function () {
 };
 connectDB = function () {
     if (!state.dbConnected) {
-        db.connect(cfg.client.db);
+        //db.connect(cfg.client.db);
+        /*
+
         db.connection.on('error', function(err){
             logThis('error', 'DB error: ' + cfg.client.db, err);
         });
         db.connection.once('open', function callback () {
             state.dbConnected = true;
             logThis('info', 'Connected to DB: ' + cfg.client.db);
-        });
+        });*/
     } else
         logThis('warn', 'Allready connected to: ' + cfg.client.db);
 };
