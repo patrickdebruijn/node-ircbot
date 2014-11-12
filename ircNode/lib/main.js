@@ -17,14 +17,13 @@ exports.init = function (config) {
     else {
         clientConfig = require('./ircClient/config');
         appDir = path.dirname(require.main.filename);  //find the root of the application
-        console.log(baseDir);
         cfg = merge(clientConfig,config);                   //Store config in global so its accesible across the entire application
         log = bunyan.createLogger({     //Start bunyan logger
             name: "node-ircBot",
             streams: [
                 {
                     stream: process.stdout,
-                    level: 'trace',
+                    level: 'trace'
                 },
                 {
                     level: 'trace',

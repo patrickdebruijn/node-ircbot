@@ -1,10 +1,9 @@
 var child_process = require('child_process');
 var messenger = require('messenger');
-var communicationSetup = false;
 var childprocess, speaker, listener;
 
 exports.start = function () {
-    if (communicationSetup && (childprocess == undefined || childprocess.connected == undefined || childprocess.connected == false)) {
+    if (state.communicationSetup && (childprocess == undefined || childprocess.connected == undefined || childprocess.connected == false)) {
         log.info("Starting Irc Bot...");
         childprocess = child_process.fork(appDir + '/ircNode/lib/ircBot');
         attachListeners();
@@ -28,12 +27,11 @@ exports.restart = function () {
 };
 
 exports.setupCommunications = function () {
-    if (!communicationSetup) {
+    if (!state.communicationSetup) {
         listener = messenger.createListener(9020);
         listener.on('sendIrcCmd', communication.listenToBot);
-        listener.on('restartBot', exports.restart);
         speaker = messenger.createSpeaker(9021);
-        return communicationSetup = true;
+        return state.communicationSetup = true;
     } else return false;
 };
 
@@ -68,6 +66,10 @@ exited = function (code, signal) {
 
 onerror = function (err) {
     log.error(err);
+};
+
+logThis = function (level, msg, arg) {
+//@TODO LOGGER FUNCTION
 };
 
 //@TODO uitzoeken of we voor processen niet PM2 of forever oid moeten gebruiken https://github.com/Unitech/PM2/blob/development/ADVANCED_README.md#programmatic-example

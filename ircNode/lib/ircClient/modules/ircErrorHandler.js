@@ -1,8 +1,8 @@
-var handlers    = {};
+var handlers = {};
 
-exports.catch = function(name,arg) {
+exports.catch = function (name, arg) {
 
-    if(name!=undefined) {
+    if (name != undefined) {
         name = name.toUpperCase();
 
         if (handlers[name] != undefined) {
@@ -12,4 +12,8 @@ exports.catch = function(name,arg) {
         else
             return false;
     }
+};
+
+logThis = function (level, msg, arg) {
+//@TODO LOGGER FUNCTION
 };

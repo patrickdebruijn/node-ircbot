@@ -8,16 +8,16 @@
     },
     "bot": {
         "masterPassword": "",
-        "commandPrefix":"@",
+        "commandPrefix": "@",
         "defaultNick": "nodeIrcBot",
         "user": "nodeIrcBot",
         "real": "nodeIrcBot",
         "pass": "",
-        "autoJoinChannels":[],
+        "autoJoinChannels": [],
         "autoRestartOnFailure": true,
-        "restartDelay":10,
+        "restartDelay": 10,
         "owners": {
-            "admin":""
+            "admin": ""
         }
     },
     "development": {
@@ -27,56 +27,40 @@
     "client": {
         "version": "NodeIrcBot:V2:vps.nodeircbot.com",
         "systemCommand": "control",
-        "permissions" : {
-            "groups": ["admin","mod","guest"],
+        "db": "mongodb://127.0.0.1:27017/test",
+        "permissions": {
+            "groups": [
+                "admin",
+                "mod",
+                "guest"
+            ],
             "commands": {
-                "AUTH":{
-                    "groups":[],
+                "AUTH": {
+                    "groups": [],
                     "help": "Authorize yourself",
-                    "arg": ["username","password"]
+                    "arg": [
+                        "username",
+                        "password"
+                    ]
                 },
-                "REGISTER": {
-
-                },
-                "LOGIN": {
-
-                },
-                "REGISTER": {
-
-                },
-                "RELOAD": {
-
-                },
-                "RESTART": {
-
-                },
-                "SAY": {
-
-                },
-                "JOIN": {
-
-                },
-                "PART": {
-
-                },
-                "SHOUT": {
-
-                },
-                "OP": {
-
-                },
-                "DEOP": {
-
-                },
-                "UPTIME": {
-
-                },
-                "STATS": {
-
-                },
-                "REGISTER": {
-
-                }
+                "REGISTER": {},
+                "LOGIN": {},
+                "REGISTER": {},
+                "RELOAD": {},
+                "RESTART": {},
+                "SAY": {},
+                "NICK": {},
+                "JOIN": {},
+                "PART": {},
+                "SHOUT": {},
+                "OP": {},
+                "DEOP": {},
+                "UPTIME": {},
+                "STATS": {},
+                "REGISTER": {},
+                "VERSION": {},
+                "UPDATE": {},
+                "REVERT": {}
             }
         }
     }
