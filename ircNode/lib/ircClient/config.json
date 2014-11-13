@@ -28,6 +28,7 @@
         "version": "NodeIrcBot:V2:vps.nodeircbot.com",
         "systemCommand": "control",
         "db": "mongodb://127.0.0.1:27017/test",
+        "systemAclResource":"system",
         "permissions": {
             "groups": [
                 "admin",
@@ -36,17 +37,16 @@
             ],
             "commands": {
                 "AUTH": {
-                    "groups": [],
+                    "groups": false,
                     "help": "Authorize yourself",
                     "arg": [
                         "username",
                         "password"
                     ]
                 },
-                "REGISTER": {},
-                "LOGIN": {},
-                "REGISTER": {},
-                "RELOAD": {},
+                "REGISTER": {"groups": false},
+                "LOGIN": {"groups": false},
+                "RELOAD": {"groups": ["admin","Mod"]},
                 "RESTART": {},
                 "SAY": {},
                 "NICK": {},

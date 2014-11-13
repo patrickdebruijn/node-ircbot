@@ -7,13 +7,13 @@ var func = {},
 
 exports.state = state;
 
-exports.fire = function (name, arg,force) {
+exports.fire = function (name, arg, force) {
 
     name = name.toLowerCase();
     if (func[name] != undefined)
-        func[name](arg,force);
+        func[name](arg, force);
     else if (constants.raw.COMMAND[name] != undefined)
-        send(name, arg,force);
+        send(name, arg, force);
     else
         log.error('Fire request: ' + name + ' is Undefined');
 };
@@ -28,21 +28,20 @@ exports.send = function (cmd, arg, force) {
             var msg = constants.raw.COMMAND[cmd] + " " + arg;
             //@TODO PREPEND USER IDENT   :#{nick}!ournick@company.com JOIN
 
-            if (state.isConnected ) {
-                if((state.isAuthed && state.isAutoJoined) || force!=undefined) {
+            if (state.isConnected) {
+                if ((state.isAuthed && state.isAutoJoined) || force != undefined) {
                     if (force != undefined)communication.sendToServer(msg);
                     else {
                         queue.push(msg);
                         sendQueue();
                     }
-                } else
-                {
+                } else {
                     queue.push(msg);
-                    log.debug('Can\'t send messages till i\'m authed and autojoined: '+cmd+": "+arg);
+                    log.debug('Can\'t send messages till i\'m authed and autojoined: ' + cmd + ": " + arg);
                 }
             } else {
                 queue.push(msg);
-                log.debug('Can\'t send messages till i\'m connected: '+cmd+": "+arg);
+                log.debug('Can\'t send messages till i\'m connected: ' + cmd + ": " + arg);
             }
         }
     } else
@@ -94,22 +93,22 @@ func.autojoinchannels = function () {
 
 func.join = function (channel) {
     if (channel != undefined)
-        send("JOIN", channel,true);
+        send("JOIN", channel, true);
     else
         log.warn('Command: [JOIN] needs an function');
 };
 
 func.leave = function (channel) {
     if (channel != undefined)
-        send("LEAVE", channel,true);
+        send("LEAVE", channel, true);
     else
         log.warn('Command: [LEAVE] needs an function');
 };
 
-func.say = function (arg,force) {
+func.say = function (arg, force) {
     if (arg[0] != undefined) {
         if (arg[1] != undefined)
-            send("PRIVMSG", arg,force);
+            send("PRIVMSG", arg, force);
         else
             log.warn('Command: [SAY](chan,msg) needs a second argument');
     } else log.warn('Command: [SAY](chan,msg) needs two arguments');

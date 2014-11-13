@@ -24,4 +24,4 @@ logThis = function (level, msg, arg) {
 //@TODO LOGGER FUNCTION
 };
 
-//
+//@TODO RRELOAD gewijzigde bestanden tonen in logger channel

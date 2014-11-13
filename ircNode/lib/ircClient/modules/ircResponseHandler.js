@@ -19,7 +19,7 @@ handlers.PINGSTART = function (arg) {
 };
 //@TODO FIX IT ZODAT HIJ GEWOON EEN PING RESPONSE GEEFT
 handlers.PING = function (arg) {
-    modules['ircRequests'].fire('say', [arg.sender.nick, '\001PONG ' + arg.message[1]],true);
+    modules['ircRequests'].fire('say', [arg.sender.nick, '\001PONG ' + arg.message[1]], true);
 };
 
 handlers.SNOTICE = function (arg) {
@@ -27,7 +27,7 @@ handlers.SNOTICE = function (arg) {
 };
 //@TODO FIX IT ZODAT HIJ GEWOON EEN VERSION RESPONSE GEEFT
 handlers.VERSION = function (arg) {
-    modules['ircRequests'].fire('say', [arg.sender.nick, '\001VERSION ' + cfg.client.version + '\001'],true);
+    modules['ircRequests'].fire('say', [arg.sender.nick, '\001VERSION ' + cfg.client.version + '\001'], true);
 };
 
 logThis = function (level, msg, arg) {
