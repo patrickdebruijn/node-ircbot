@@ -32,7 +32,11 @@ exports.getSession = function (line) {
     return false;
 };
 
-
+exports.changeGroup = function (line,ngroup) {
+    collection['sessions'].update({ident:line.session.ident},{$set: {group:ngroup}},function(result){
+        console.log(result);
+    });
+}
 
 exports.deleteSession = function () {
     //@TODO delete session voor parts oid.

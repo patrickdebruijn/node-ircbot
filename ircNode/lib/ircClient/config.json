@@ -16,9 +16,7 @@
         "autoJoinChannels": [],
         "autoRestartOnFailure": true,
         "restartDelay": 10,
-        "owners": {
-            "admin": ""
-        }
+        "owner": ["admin","admin"]
     },
     "development": {
         "debugModus": true,
@@ -29,7 +27,7 @@
         "systemCommand": "control",
         "db": "mongodb://127.0.0.1:27017/test",
         "systemAclResource":"system",
-        "queueDelay":"10000",
+        "queueDelay":"1000",
         "permissions": {
             "groups": [
                 "admin",
@@ -54,19 +52,30 @@
                         }
                     ]
                 },
+                "INFO": {
+                    "groups": false,
+                    "function": "info",
+                    "help":"",
+                    "description": "Get information about your session",
+                    "arg":false
+                },
                 "REGISTER": {
                     "groups": false,
-                    "function": "auth",
+                    "function": "register",
                     "help":"",
                     "description": "Register yourself",
                     "arg":false
                 },
                 "RELOAD": {
-                    "groups": ["admin","Mod"],
+                    "groups": [
+                        "admin",
+                        "Mod"
+                    ],
                     "function": "reload",
-                    "help":"",
+                    "help": "",
                     "description": "Reload plugins",
-                    "arg":false,
+                    "arg": false
+                },
                 "RESTART": {
                     "groups": ["admin","Mod"],
                     "function": "restart",

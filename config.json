@@ -15,7 +15,8 @@
         "pass": "",
         "autoJoinChannels":[],
         "autoRestartOnFailure": true,
-        "restartDelay":10
+        "restartDelay":10,
+        "owner": ["admin","admin"]
     },
     "development": {
         "debugModus": true,

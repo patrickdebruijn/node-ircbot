@@ -1,5 +1,6 @@
 var commands = {};
 var cmds={};
+var dateFormat = require('dateformat');
 
 
 exports.fire = function (func, line) {
@@ -10,13 +11,13 @@ exports.fire = function (func, line) {
     if (commands[func] != undefined)
     {
         if (getPermission(line)) {
-
-            if(nline=checkArguments(line)!=false) {
+            nline=checkArguments(line)
+            if(nline!=false) {
                 commands[func](nline);
                 if(!line.response.params) var postmsg='';
-                else var postmsg=' with arguments: '+line.response.params.join(",");
+                else var postmsg=' with arguments: '+nline.response.params.join(",");
 
-                cmds.logThis('info', 'executed by ' + line.sender.nick+postmsg, 'CONTROL' + '::' + line.response.cmd.toUpperCase());
+                cmds.logThis('info', 'executed by ' + ircColor.bold(nline.sender.nick)+postmsg, 'CONTROL' + '::' + nline.response.cmd.toUpperCase());
             } else {
                 if(!line.response.params) var postmsg='';
                 else var postmsg=line.response.params.join(", ");
@@ -31,22 +32,35 @@ exports.fire = function (func, line) {
                     msg+='> ';
                 }
 
-                notifySender(line, false,premsg+msg);
-                cmds.logThis('info',line.sender.nick+' used invalid arguments: '+postmsg,'CONTROL'+'::'+line.response.cmd.toUpperCase());
+                exports.notifySender(line, false,premsg+msg);
+                cmds.logThis('info',ircColor.bold(line.sender.nick)+' used invalid arguments: '+postmsg,'CONTROL'+'::'+line.response.cmd.toUpperCase());
             }
         } else
         {
-            notifySender(line, false, "You have no permission to access this command: "+line.response.cmd.toUpperCase());
+            exports.notifySender(line, false, "You have no permission to access this command: "+line.response.cmd.toUpperCase());
             cmds.logThis('info',line.sender.nick+' has no permission to execute this command','CONTROL'+'::'+line.response.cmd.toUpperCase());
         }
     }
     else
-        cmds.logThis('error','command is undefined',name);
+        cmds.logThis('error','command is undefined',func);
 };
 
 commands.auth = function(line)
 {
+    console.log(line);
+    //@TODO check usr db
+    if(line.response.params[0]==cfg.bot.owner[0] && line.response.params[1]==cfg.bot.owner[1])
+    {
+        modules['ircUsers'].changeGroup(line,'admin');
+        exports.notifySender(line, true,"Welcome back "+cfg.bot.owner[0]);
+    } else {
+        exports.notifySender(line, false,"Wrong credentials");
+    }
+}
 
+commands.info = function(line)
+{
+    exports.notifySender(line, true," | Group:"+line.session.group+" | Message count:"+line.session.meta.msgCount+" | Last active:"+dateFormat(new Date(line.session.last.date),"dd-mm-yy HH:mm")+" | First active:"+dateFormat(new Date(line.session.meta.regDate),"dd-mm-yy HH:mm")+" | ");
 }
 
 commands.reload = function(line)
@@ -67,7 +81,7 @@ getPermission = function (line) {
         if (cfg.client.permissions.commands[cmd].groups == false)return true;
         else if (cfg.client.permissions.commands[cmd].groups != undefined) {
             for (var num in cfg.client.permissions.commands[cmd].groups) {
-                if (typeof cfg.client.permissions.commands[cmd].groups[num] == 'string' && cmd == cfg.client.permissions.commands[cmd].groups[num].toUpperCase())return true;
+                if (typeof cfg.client.permissions.commands[cmd].groups[num] == 'string' && line.session.group.toUpperCase() == cfg.client.permissions.commands[cmd].groups[num].toUpperCase())return true;
             }
         }
     }
@@ -76,22 +90,17 @@ getPermission = function (line) {
 
 checkArguments = function (line){
     cmd = line.response.cmd.toUpperCase();
-    var passed = true;
     if (cfg.client.permissions.commands[cmd].arg == false || cfg.client.permissions.commands[cmd].arg == undefined)return line;
     else {
         for (var i = 0; i < cfg.client.permissions.commands[cmd].arg.length; i++)
         {
-            if(cfg.client.permissions.commands[cmd].arg[i].mandatory && line.response.params[i]==undefined)passed=false;
+            if(cfg.client.permissions.commands[cmd].arg[i].mandatory && line.response.params[i]==undefined)return false;
             else if(cfg.client.permissions.commands[cmd].arg[i].default!=false &&
                 cfg.client.permissions.commands[cmd].arg[i].default!=undefined &&
                 !cfg.client.permissions.commands[cmd].arg[i].mandatory &&
                 line.response.params[i]==undefined)line.response.params[i]=cfg.client.permissions.commands[cmd].arg[i].default;
         }
-        for (var num in cfg.client.permissions.commands[cmd].arg) {
-            if (typeof cfg.client.permissions.commands[cmd].groups[num] == 'string' && cmd == cfg.client.permissions.commands[cmd].groups[num].toUpperCase())return true;
-        }
-        if(passed)return line;
-        else return false;
+        return line;
     }
 
 };
@@ -100,7 +109,7 @@ cmds.logThis = function (level, msg, vari) {
     modules['ircLogger'].log(level, '<'+vari+'> '+msg,'CORE','COMMAND');
 };
 
-notifySender = function(line,success,msg)
+exports.notifySender = function(line,success,msg)
 {
     var message;
     if(success)
