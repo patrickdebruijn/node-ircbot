@@ -1,15 +1,15 @@
+var stats={};
 exports.analyse = function (line) {
 
     logRawData(line);
-    logChannelData(line);
-    logUserData(line);
+
 
 //@TODO log msg'es
 
 };
 
 exports.generateStats = function () {
-
+    //@TODO genereer een summary raport
 };
 
 exports.archive = function () {
@@ -18,10 +18,13 @@ exports.archive = function () {
 
 exports.sync = function () {
     //Plaats heir scheduled processen om users in channels te syncen. + listeners voor NICK changes en part etc
+    //@TODO deze functie in een interval hangen. Functie gaat via LIST en NAMES state opvragen van channels en users om op te slaan
+    fetchChannelData(line);
+    fetchUserData(line);
 };
 
 logRawData = function (line) {
-    //@TODO functie maken om ruwe data te archiveren
+    //@TODO insert nick+ident+chan+msg+date in db
 };
 
 logChannelData = function (line) {
@@ -32,8 +35,8 @@ logUserData = function (line) {
 
 };
 
-logThis = function (level, msg, arg) {
-//@TODO LOGGER FUNCTION
+stats.logThis = function (level, msg, vari) {
+    modules['ircLogger'].log(level, '<'+vari+'> '+msg,'CORE','STATS');
 };
 
 

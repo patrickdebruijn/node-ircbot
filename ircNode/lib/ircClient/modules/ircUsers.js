@@ -1,15 +1,14 @@
-var collection = false,
-    session = false,
-    Acl = require("virgen-acl").Acl,
-    acl = new Acl();
+var collection = {},
+    session = false;
+var users = {};
 
 exports.init = function () {
-    loadPermissions();
-    if (state.dbConnected && collection == false) {
+    if (state.dbConnected && collection['sessions'] == undefined && collection['users'] == undefined) {
         //Maak schema en laad het in:
-        collection = db.collection('sessions');
+        collection['sessions'] = db.collection('sessions');
+        collection['users'] = db.collection('users');
     } else
-        logThis("error", "Not connect to DB, can't initialize users module");
+        users.logThis("error", "Not connect to DB, can't initialize users module","INIT");
 
 
 };
@@ -17,11 +16,11 @@ exports.init = function () {
 exports.getSession = function (line) {
 
     if (line.sender != false && line.sender.nick != false && line.sender.ident != false && line.sender.ident != 'server' && state.dbConnected) {
-        collection.findOne({
+        collection['sessions'].findOne({
             ident: line.sender.ident
         }, function (err, session) {
             if (err) {
-                logThis('error', 'DB QUERY ERROR', err);
+                users.logThis('error', 'DB QUERY ERROR', "GETSESSION");
                 return false
             } else if (session == undefined) {
                 return registerNewSession(line);
@@ -33,19 +32,7 @@ exports.getSession = function (line) {
     return false;
 };
 
-exports.getPermission = function (line) {
-    console.log(line);
-    if (line.sender != false && line.sender.nick != false && line.sender.ident != false && line.sender.ident != 'server' && line.response.cmd != false && line.response.cmd != undefined && cfg.client.permissions.commands[line.response.cmd] != undefined) {
-        cmd = line.response.cmd.toUpperCase();
-        if (cfg.client.permissions.commands[cmd].groups == false)return true;
-        else if (cfg.client.permissions.commands[cmd].groups != undefined) {
-            for (var num in cfg.client.permissions.commands[cmd].groups) {
-                if (typeof cfg.client.permissions.commands[cmd].groups[num] == 'string' && cmd == cfg.client.permissions.commands[cmd].groups[num].toUpperCase())return true;
-            }
-        }
-    }
-    return false;
-};
+
 
 exports.deleteSession = function () {
     //@TODO delete session voor parts oid.
@@ -99,9 +86,10 @@ registerNewSession = function (line) {
             chans: channel
         }
     };
-    collection.insert(line.session);
+    collection['sessions'].insert(line.session);
     modules['ircParser'].processPrivMsg(line);
 };
+
 updateSession = function (session, line) {
     session.last = {
         nick: line.sender.nick,
@@ -115,21 +103,13 @@ updateSession = function (session, line) {
     session.meta.msgCount++;
     line.session = session;
 
-    collection.update({ident: line.sender.ident}, line.session);
+    collection['sessions'].update({ident: line.sender.ident}, line.session);
     modules['ircParser'].processPrivMsg(line);
 };
-//If it is there update the stats (Msg count, last active, latest msg +channel, expire date??, nick, )
 
-loadPermissions = function () {
-    //Permissions laden met virgin acl: virgin-acl https://github.com/djvirgen/virgen-acl
-    for (var i = 0; i < cfg.client.permissions.groups.length; i++)acl.addRole(cfg.client.permissions.groups[i]);
-    acl.addResource("system");
-    acl.deny();
 
-    state.permissionLoaded = true;
+users.logThis = function (level, msg, vari) {
+    modules['ircLogger'].log(level, '<'+vari+'> '+msg,'CORE','USERS');
 };
 
-
-logThis = function (level, msg, arg) {
-//@TODO LOGGER FUNCTION
-};
+//@TODO maak ook een user object welke persisitent is, en laat session object echt een session zijn

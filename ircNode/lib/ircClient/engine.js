@@ -5,14 +5,14 @@ global.state = {
     nick: false,
     dbConnected: false,
     isConnected: false,
-    communicationSetup: false,
-    permissionLoaded:false
+    communicationSetup: false
 };
 var processManager = require('./processManager'),
     connectionManager = require('./connectionManager'),
     fs = require('fs'),
     path = require('path'),
     mongojs = require('mongojs');
+var eng = {};
 global.db       = false;
 global.communication = {};
 global.modules = {};
@@ -21,8 +21,8 @@ global.ircColor = require('irc-colors'); //https://github.com/fent/irc-colors.js
 
 
 exports.init = function () {
-    connectDB();
     loadModules();
+    connectDB();
     processManager.setupCommunications();   //Setup Messenger speakers and listerners for inter-process communication
     connectionManager.connect();            //Connect with socket to the configured irc server
     modules['ircUsers'].init();
@@ -56,49 +56,55 @@ connectDB = function () {
     if (!state.dbConnected) {
         db = mongojs('nodeIrcBot');
         state.dbConnected = true;
-
-
     } else
-        logThis('warn', 'Allready connected to: ' + cfg.client.db);
+        eng.logThis('warn', 'Allready connected to: ' + cfg.client.db,'CONNECTDB');
 };
 
 disconnectDB = function () {
     if (state.dbConnected) {
         db.close();
         state.dbConnected = false;
-        logThis('debug', 'Disconnected from DB');
+        eng.logThis('debug', 'Disconnected from DB');
     } else
-        logThis('error', 'Cannot disconnect DB when not connected');
+        eng.logThis('error', 'Cannot disconnect DB when not connected',"DISCONNECTDB");
 };
 
 communication.listenToServer = function (data) {
     if (data == undefined)
-        return logThis('error', 'ListenToServer: no data');
+        return eng.logThis('error', 'no data','LISTENTOSERVER');
     else
         modules['ircParser'].execute(data.toString());
 };
 
 communication.sendToServer = function (data) {
     if (data == undefined)
-        return logThis('error', 'SendToServer: no data');
+        return eng.logThis('error', 'no data', 'SENDTOSERVER');
     else
         connectionManager.send(data);
 };
 
 communication.listenToBot = function (data) {
     if (data == undefined)
-        return logThis('error', 'ListenToBot: no data');
+        return eng.logThis('error', 'no data','LISTENTOBOT');
     else
         console.log(data)
+
+    //@TODO maak listen functies voor bot voor het doorgeven van errors en commando's
 };
 
 communication.speakToBot = function (subject, data) {
     if (subject == undefined || data == undefined)
-        return logThis('error', 'SpeakToBot: Subject or data empty');
+        return eng.logThis('error','Subject or data empty','SPEAKTOBOT');
     else
         processManager.send(subject, data);
 };
 
-logThis = function (level, msg, arg) {
-//@TODO LOGGER FUNCTION
+eng.logThis = function (level, msg, vari) {
+    modules['ircLogger'].log(level, '<'+vari+'> '+msg,'CORE','ENGINE');
 };
+
+//@TODO maak ircCommands parsing verder af, check op arguments en implementeer help
+//@TODO ircUser.js af
+
+
+//@TODO setup https://github.com/ncb000gt/node-cron  voor module scheduled jobs

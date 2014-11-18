@@ -1,10 +1,11 @@
 var net = require('net');
 var attempts = 0;
 var connection;
+var conn= {};
 
 exports.connect = function () {
     if (!state.isConnected && cfg.server.maxRetries >= attempts) {
-        log.info("Connecting to irc server: " + cfg.server.addr + ":" + cfg.server.port);
+        conn.logThis("Connecting to irc server: " + cfg.server.addr + ":" + cfg.server.port);
         attempts++;
         connection = new net.Socket();
         connection.setEncoding('ascii');
@@ -18,12 +19,11 @@ exports.connect = function () {
 exports.disconnect = function (force) {
     //@TODO send quit msg to irc
     if (state.isConnected) {
-        log.warn("Disconnecting from irc server: " + cfg.server.addr + ":" + cfg.server.port);
+        conn.logThis("warn","Disconnecting from irc server: " + cfg.server.addr + ":" + cfg.server.port);
         connection.destroy();
     }
-    isConnected();
     if (force == undefined && cfg.server.autoReconnect) {
-        log.warn("Reconnecting in " + cfg.server.retryDelay * 1000 + " seconds...");
+        conn.logThis("warn","Reconnecting in " + cfg.server.retryDelay * 1000 + " seconds...");
         setTimeout(exports.connect, cfg.server.retryDelay * 1000);
     }
 };
@@ -36,7 +36,7 @@ exports.reconnect = function () {
 exports.send = function (data) {
     if (state.isConnected) {
         connection.write(data + '\r\n');
-        log.debug("SEND TO IRC: " + data);
+        conn.logThis('trace',"SEND TO IRC: " + data);
     } else log.error({subject: "Can't send data when disconnected from irc server", data: data});
 };
 
@@ -48,15 +48,13 @@ attachListenersToSocket = function () {
     connection.on('data', communication.listenToServer);
     //@TODO crash handling verbetere, reload na crash? Email alert/pushover alert?
 };
-
-
-isConnected = function () {
-    log.warn("IrcClient is state.isConnected");
+disconnected = function () {
+    log.warn("IrcClient is disconnected");
     state.isConnected = false;
-};
+}
 
 onconnect = function () {
-    log.info("IrcClient is connected");
+    conn.logThis('info','IrcClient is connected');
     state.isConnected = true;
     attempts = 0;
 
@@ -70,20 +68,20 @@ onconnect = function () {
 };
 
 onend = function () {
-    log.warn('Irc server  is closing the connection...');
-    isConnected();
+    conn.logThis('warn','Irc server  is closing the connection...');
+    disconnected();
 };
 
 ontimeout = function () {
-    log.warn('Irc server timeouts...');
-    isConnected();
+    conn.logThis('warn','Irc server timeouts...');
+    disconnected();
 };
 
 onerror = function (err) {
-    log.error(err);
-    isConnected();
+    conn.logThis('error',err);
+    disconnected();
 };
 
-logThis = function (level, msg, arg) {
-//@TODO LOGGER FUNCTION
+conn.logThis = function (level, msg) {
+    modules['ircLogger'].log(level, msg,'CORE','CONNECTION');
 };

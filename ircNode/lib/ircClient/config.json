@@ -29,6 +29,7 @@
         "systemCommand": "control",
         "db": "mongodb://127.0.0.1:27017/test",
         "systemAclResource":"system",
+        "queueDelay":"10000",
         "permissions": {
             "groups": [
                 "admin",
@@ -38,16 +39,41 @@
             "commands": {
                 "AUTH": {
                     "groups": false,
-                    "help": "Authorize yourself",
+                    "function": "auth",
+                    "help":"",
+                    "description": "Authorize yourself",
                     "arg": [
-                        "username",
-                        "password"
+                        {
+                            "name":"username",
+                            "mandatory":true,
+                            "default":false
+                        }, {
+                            "name":"password",
+                            "mandatory":true,
+                            "default":false
+                        }
                     ]
                 },
-                "REGISTER": {"groups": false},
-                "LOGIN": {"groups": false},
-                "RELOAD": {"groups": ["admin","Mod"]},
-                "RESTART": {},
+                "REGISTER": {
+                    "groups": false,
+                    "function": "auth",
+                    "help":"",
+                    "description": "Register yourself",
+                    "arg":false
+                },
+                "RELOAD": {
+                    "groups": ["admin","Mod"],
+                    "function": "reload",
+                    "help":"",
+                    "description": "Reload plugins",
+                    "arg":false,
+                "RESTART": {
+                    "groups": ["admin","Mod"],
+                    "function": "restart",
+                    "help":"",
+                    "description": "Restart ircbot",
+                    "arg":false
+                },
                 "SAY": {},
                 "NICK": {},
                 "JOIN": {},
@@ -59,8 +85,8 @@
                 "STATS": {},
                 "REGISTER": {},
                 "VERSION": {},
-                "UPDATE": {},
-                "REVERT": {}
+                "GITUPDATE": {},
+                "GITREVERT": {}
             }
         }
     }

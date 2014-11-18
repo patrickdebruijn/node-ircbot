@@ -3,6 +3,7 @@ var func = {},
     queue = [],
     c = '\x03',
     pos2 = c.length + 2;
+var req={};
 
 
 exports.state = state;
@@ -15,10 +16,9 @@ exports.fire = function (name, arg, force) {
     else if (constants.raw.COMMAND[name] != undefined)
         send(name, arg, force);
     else
-        log.error('Fire request: ' + name + ' is Undefined');
+        req.logThis('error','function is undefined',name);
 };
-//@TODO dont send data untill welcome cmd
-//@TODO add msgs back to the queue when bot reloads
+
 exports.send = function (cmd, arg, force) {
 
     if (constants.raw.COMMAND[cmd] != undefined) {
@@ -26,7 +26,6 @@ exports.send = function (cmd, arg, force) {
 
         if (typeof arg == "string") {
             var msg = constants.raw.COMMAND[cmd] + " " + arg;
-            //@TODO PREPEND USER IDENT   :#{nick}!ournick@company.com JOIN
 
             if (state.isConnected) {
                 if ((state.isAuthed && state.isAutoJoined) || force != undefined) {
@@ -37,15 +36,14 @@ exports.send = function (cmd, arg, force) {
                     }
                 } else {
                     queue.push(msg);
-                    log.debug('Can\'t send messages till i\'m authed and autojoined: ' + cmd + ": " + arg);
                 }
             } else {
                 queue.push(msg);
-                log.debug('Can\'t send messages till i\'m connected: ' + cmd + ": " + arg);
+                req.logThis('debug','Can\'t send messages till i\'m connected',cmd);
             }
         }
     } else
-        log.error('Send irc command: ' + cmd + ' is Undefined');
+        req.logThis('warn','irc command is undefined',cmd);
 
 };
 
@@ -64,9 +62,9 @@ sendQueue = function () {
 
 func.away = function (msg) {
     if (state.isAway) {
-        if (msg == undefined) send("AWAY"); else log.warn('Command: [AWAY] you are allready away');
+        if (msg == undefined) send("AWAY"); else req.logThis('warn','I\'m allready away....','AWAY');
     } else {
-        if (msg != undefined) send("AWAY", msg); else log.warn('Command: [AWAY] you aren\'t away');
+        if (msg != undefined) send("AWAY", msg); else req.logThis('warn','needs an argument (awaymsg)','AWAY');
     }
 };
 
@@ -78,7 +76,7 @@ func.authenticate = function () {
         state.isAuthed = true;                //@TODO: Verplaats deze set var naar responseHandler op absis van welkom commando
         state.nick = cfg.bot.defaultNick;
     } else
-        log.warn('You are allready authenticated...');
+        req.logThis('warn','Can\'t authenticate because, i\'m allready authenticated...','AUTHENTICATE');
 };
 
 func.autojoinchannels = function () {
@@ -88,21 +86,24 @@ func.autojoinchannels = function () {
         if (cfg.development.loggerChannel != '' && cfg.development.loggerChannel != false && cfg.development.loggerChannel != undefined)send("JOIN", cfg.development.loggerChannel, true);
         state.isAutoJoined = true;  //@TODO state veranderingen hangen aan een reponse ipv vannuit gaan dat het goed gaat
     } else
-        log.warn('You have allready auto joined or are not yet authed');
+        req.logThis('warn','Allready auto joined or are not yet authed...','AUTOJOIN');
 };
 
+//@TODO uitzoeken of je meerdere chans tegelijk kan joinen met dit commando
 func.join = function (channel) {
-    if (channel != undefined)
+    if (channel != undefined) {
+        if (Array.isArray(channel))  channel = arg.join(", ");
         send("JOIN", channel, true);
+    }
     else
-        log.warn('Command: [JOIN] needs an function');
+        req.logThis('warn','needs an argument or list ([chan,chan])','JOIN');
 };
 
 func.leave = function (channel) {
     if (channel != undefined)
         send("LEAVE", channel, true);
     else
-        log.warn('Command: [LEAVE] needs an function');
+        req.logThis('warn','needs an argument (chan)','LEAVE');
 };
 
 func.say = function (arg, force) {
@@ -110,14 +111,23 @@ func.say = function (arg, force) {
         if (arg[1] != undefined)
             send("PRIVMSG", arg, force);
         else
-            log.warn('Command: [SAY](chan,msg) needs a second argument');
-    } else log.warn('Command: [SAY](chan,msg) needs two arguments');
+            req.logThis('warn','needs a second argument (chan,msg)','PRIVMSG')
+    } else req.logThis('warn','needs two arguments (chan,msg)','PRIVMSG')
 };
 
-setInterval(sendQueue, 1000);
+func.notice = function (arg) {
+    if (arg[0] != undefined) {
+        if (arg[1] != undefined)
+            send("NOTICE", arg);
+        else
+            req.logThis('warn','needs a second argument (nick,msg)','NOTICE')
+    } else req.logThis('warn','needs two arguments (nick,msg)','NOTICE')
+};
 
-logThis = function (level, msg, arg) {
-//@TODO LOGGER FUNCTION
+setInterval(sendQueue, cfg.client.queueDelay);
+
+req.logThis = function (level, msg, vari) {
+    modules['ircLogger'].log(level, '<'+vari+'> '+msg,'CORE','REQUEST');
 };
 
 

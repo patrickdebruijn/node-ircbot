@@ -1,4 +1,5 @@
 var handlers = {};
+var error={};
 
 exports.catch = function (name, arg) {
 
@@ -14,6 +15,6 @@ exports.catch = function (name, arg) {
     }
 };
 
-logThis = function (level, msg, arg) {
-//@TODO LOGGER FUNCTION
+error.logThis = function (level, msg, vari) {
+    modules['ircLogger'].log(level, '<'+vari+'> '+msg,'CORE','ERROR');
 };
