@@ -25,19 +25,20 @@
     "client": {
         "version": "NodeIrcBot:V2:vps.nodeircbot.com",
         "systemCommand": "control",
-        "db": "mongodb://127.0.0.1:27017/test",
         "systemAclResource":"system",
         "queueDelay":"1000",
         "permissions": {
             "groups": [
                 "admin",
-                "mod",
-                "guest"
+                "elite",
+                "commonalty",
+                "scum"
             ],
             "commands": {
                 "AUTH": {
                     "groups": false,
                     "function": "auth",
+                    "alias":["auth"],
                     "help":"",
                     "description": "Authorize yourself",
                     "arg": [
@@ -52,24 +53,79 @@
                         }
                     ]
                 },
+                "CHANGEPASS": {
+                    "groups": ["admin","elite","commonalty"],
+                    "function": "changepass",
+                    "help":"",
+                    "description": "Change your password",
+                    "arg": [{
+                            "name":"password",
+                            "mandatory":true,
+                            "default":false
+                        }
+                    ]
+                },
                 "INFO": {
                     "groups": false,
                     "function": "info",
+                    "alias":["info"],
                     "help":"",
                     "description": "Get information about your session",
+                    "arg":[
+                        {
+                            "name":"nick",
+                            "mandatory":false,
+                            "default":false
+                        }]
+                },
+                "HELP": {
+                    "groups": false,
+                    "function": "help",
+                    "alias":["help"],
+                    "help":"",
+                    "description": "Show help",
                     "arg":false
                 },
                 "REGISTER": {
-                    "groups": false,
+                    "groups": ["scum"],
                     "function": "register",
+                    "alias":["register"],
                     "help":"",
                     "description": "Register yourself",
-                    "arg":false
+                    "arg": [
+                        {
+                            "name":"username",
+                            "mandatory":true,
+                            "default":false
+                        }, {
+                            "name":"password",
+                            "mandatory":true,
+                            "default":false
+                        }
+                    ]
+                },
+                "LOGIN": {
+                    "groups": ["scum"],
+                    "function": "login",
+                    "alias":["login"],
+                    "help":"",
+                    "description": "Login",
+                    "arg": [
+                        {
+                            "name":"username",
+                            "mandatory":true,
+                            "default":false
+                        }, {
+                            "name":"password",
+                            "mandatory":true,
+                            "default":false
+                        }
+                    ]
                 },
                 "RELOAD": {
                     "groups": [
                         "admin",
-                        "Mod"
+                        "elite"
                     ],
                     "function": "reload",
                     "help": "",
@@ -77,25 +133,154 @@
                     "arg": false
                 },
                 "RESTART": {
-                    "groups": ["admin","Mod"],
+                    "groups": ["admin"],
                     "function": "restart",
                     "help":"",
                     "description": "Restart ircbot",
                     "arg":false
                 },
-                "SAY": {},
-                "NICK": {},
-                "JOIN": {},
-                "PART": {},
-                "SHOUT": {},
-                "OP": {},
-                "DEOP": {},
-                "UPTIME": {},
-                "STATS": {},
-                "REGISTER": {},
-                "VERSION": {},
-                "GITUPDATE": {},
-                "GITREVERT": {}
+                "SAY": {
+                    "groups": ["admin","elite"],
+                    "function": "say",
+                    "help":"",
+                    "description": "Talk in a channels",
+                    "arg": [
+                        {
+                            "name":"message",
+                            "mandatory":true,
+                            "default":false
+                        },
+                        {
+                            "name":"channel",
+                            "mandatory":true,
+                            "default":false
+                        }
+                    ]
+                },
+                "NICK": {
+                    "groups": ["admin","elite"],
+                    "function": "nick",
+                    "help":"",
+                    "description": "Change nicks",
+                    "arg": [
+                        {
+                            "name":"nick",
+                            "mandatory":true,
+                            "default":false
+                        }
+                    ]
+                },
+                "JOIN": {
+                    "groups": ["admin","elite"],
+                    "function": "join",
+                    "help":"",
+                    "description": "Join channel",
+                    "arg": [
+                        {
+                            "name":"channel",
+                            "mandatory":true,
+                            "default":false
+                        }
+                    ]
+                },
+                "LEAVE": {
+                    "groups": ["admin","elite"],
+                    "function": "leave",
+                    "help":"",
+                    "description": "Leave channel",
+                    "arg": [
+                        {
+                            "name":"channel",
+                            "mandatory":true,
+                            "default":false
+                        }
+                    ]
+                },
+                "SHOUT": {
+                    "groups": ["admin","elite"],
+                    "function": "shout",
+                    "help":"",
+                    "description": "Talk in capitals in all channels",
+                    "arg": [
+                        {
+                            "name":"message",
+                            "mandatory":true,
+                            "default":false
+                        }
+                    ]
+                },
+                "OP": {
+                    "groups": ["admin"],
+                    "function": "op",
+                    "help":"",
+                    "description": "OP a user",
+                    "arg": [
+                        {
+                            "name":"nick",
+                            "mandatory":true,
+                            "default":false
+                        }, {
+                            "name":"group",
+                            "mandatory":false,
+                            "default":"elite"
+                        }
+                    ]
+                },
+                "DEOP": {
+                    "groups": ["admin"],
+                    "function": "deop",
+                    "help":"",
+                    "description": "DEOP a user",
+                    "arg": [
+                        {
+                            "name":"nick",
+                            "mandatory":true,
+                            "default":false
+                        }, {
+                            "name":"group",
+                            "mandatory":false,
+                            "default":"commonalty"
+                        }
+                    ]
+                },
+                "UPTIME": {
+                    "groups": false,
+                    "function": "uptime",
+                    "alias":["uptime"],
+                    "help":"",
+                    "description": "Show server uptime",
+                    "arg":false
+                },
+                "STATS": {
+                    "groups": false,
+                    "function": "stats",
+                    "alias":["stats"],
+                    "help":"",
+                    "description": "Show usage stats",
+                    "arg":false
+                },
+                "VERSION": {
+                    "groups": false,
+                    "function": "version",
+                    "alias":["v","version"],
+                    "help":"",
+                    "description": "Show version",
+                    "arg":false
+                },
+                "GITUPDATE": {
+                    "groups": ["admin"],
+                    "function": "restart",
+                    "help":"",
+                    "description": "Update irc bot from git",
+                    "arg":false
+                },
+                "GITREVERT": {
+                    "groups": ["admin"],
+                    "function": "restart",
+                    "help":"",
+                    "description": "Revert last git update",
+                    "arg":false
+                }
             }
         }
     }

@@ -54,7 +54,7 @@ loadModules = function () {
 };
 connectDB = function () {
     if (!state.dbConnected) {
-        db = mongojs('nodeIrcBot');
+        db = mongojs('nodeIrcBotDb');
         state.dbConnected = true;
     } else
         eng.logThis('warn', 'Allready connected to: ' + cfg.client.db,'CONNECTDB');

@@ -13,6 +13,55 @@ exports.init = function () {
 
 };
 
+exports.register = function (username,password,line) {
+
+    exports.findByUsername(username,function(isTaken){
+        if(!isTaken)
+        {
+            user = {
+                username: username,
+                password: password,
+                group: 'commonalty',
+                mode: false,
+                meta: {
+                    regDate: new Date(),
+                    msgCount: 1,
+                    session:[{
+                        ident:line.session.ident,
+                        data:line.session
+                    }]
+                }
+            };
+            collection['users'].insert(user);
+            exports.changeGroup(line,'commonalty');
+            modules['ircRequests'].notifySender(line, true,"Successfully registered: ["+user.username+"] You are now logged in");
+        } else
+            modules['ircRequests'].notifySender(line, false,"Username is allready taken: ["+username+"]");
+    });
+};
+
+exports.login = function (username,password,line) {
+
+    exports.findByUsername(username,function(user){
+        if(user!=false && user.password==password)
+        {
+            exports.changeGroup(line,user.group);
+            modules['ircRequests'].notifySender(line, true,"Welcome back ["+user.username+"]");
+        } else
+            modules['ircRequests'].notifySender(line, false,"Username is allready taken: ["+username+"]");
+    });
+};
+
+exports.findByUsername = function(username,callback)
+{
+    collection['users'].findOne({username: username}, function(err, res) {
+        if (res==undefined)
+            callback(false);
+        else
+            callback(res);
+    });
+}
+
 exports.getSession = function (line) {
 
     if (line.sender != false && line.sender.nick != false && line.sender.ident != false && line.sender.ident != 'server' && state.dbConnected) {
@@ -33,10 +82,13 @@ exports.getSession = function (line) {
 };
 
 exports.changeGroup = function (line,ngroup) {
-    collection['sessions'].update({ident:line.session.ident},{$set: {group:ngroup}},function(result){
-        console.log(result);
+    collection['sessions'].update({ident:line.session.ident},{$set: {group:ngroup}},function(err,result){
+        if(result==undefined)
+            users.logThis('error', 'DB QUERY ERROR', "changeGroup");
+        else
+            modules['ircRequests'].notifySender(line, true,"You are promoted to the ["+ngroup+"] group");
     });
-}
+};
 
 exports.deleteSession = function () {
     //@TODO delete session voor parts oid.
@@ -73,7 +125,7 @@ registerNewSession = function (line) {
 
     line.session = {
         ident: line.sender.ident,
-        group: 'guest',
+        group: 'scum',
         mode: false,
         meta: {
             regDate: new Date(),

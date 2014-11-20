@@ -47,6 +47,17 @@ exports.send = function (cmd, arg, force) {
 
 };
 
+exports.notifySender = function(line,success,msg)
+{
+    var message;
+    if(success)
+        message= ircColor.bggreen(msg);
+    else
+        message= ircColor.bgpurple.red(msg);
+
+    func.notice([line.sender.nick, message]);
+};
+
 send = function (cmd, arg, force) {
     exports.send(cmd, arg, force);
 };

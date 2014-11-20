@@ -11,26 +11,26 @@ exports.log = function (level, message, context, subject) {
     switch(level = level.toLowerCase()){
         case 'fatal':
             log.fatal("["+context+"]"+message);
-            message = ircColor.bgred(ircColor.bold("[FATAL]")+ccontext+message);
+            message = ircColor.bgred(ircColor.bold("[F]")+ccontext+message);
         case 'error':
             log.error("["+context+"]"+message);
-            message = ircColor.bgbrown(ircColor.bold("[ERROR]")+ccontext+message);
+            message = ircColor.bgbrown(ircColor.bold("[E]")+ccontext+message);
             break;
         case 'warn':
             log.warn("["+context+"]"+message);
-            message = ircColor.bgyellow(ircColor.bold("[WARN]")+ccontext+message);
+            message = ircColor.bgyellow(ircColor.bold("[W]")+ccontext+message);
             break;
         case 'info':
             log.info("["+context+"]"+message);
-            message = ircColor.bgsilver(ircColor.bold("[INFO]")+ccontext+message);
+            message = ircColor.bgsilver(ircColor.bold("[I]")+ccontext+message);
             break;
         case 'debug':
             log.debug("["+context+"]"+message);
-            message = ircColor.bggray(ircColor.bold("[DEBUG]")+ccontext+message);
+            message = ircColor.bggray(ircColor.bold("[D]")+ccontext+message);
             break;
         case 'trace':
             log.trace("["+context+"]"+message);
-            message = ircColor.bgpink(ircColor.bold("[trace]")+ccontext+message);
+            message = ircColor.bgpink(ircColor.bold("[T]")+ccontext+message);
             break;
     }
 

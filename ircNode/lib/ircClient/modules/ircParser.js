@@ -128,7 +128,24 @@ parseResponse = function (response, method, receiverType) {
 
                 }
                 else
-                    cmdType = PLUGIN;
+                {
+                    for (var prop in cfg.client.permissions.commands) {
+                        if(cfg.client.permissions.commands[prop].alias!=undefined && cfg.client.permissions.commands[prop].alias!=false)
+                        {
+                            for (var i = 0; i < cfg.client.permissions.commands[prop].alias.length; i++) {
+                                if(cmd==cfg.client.permissions.commands[prop].alias[i].toUpperCase())
+                                {
+                                    cmd=prop;
+                                    cmdType = BOT;
+                                }
+                            }
+                        }
+                    }
+                    if(cmdType==false)
+                    {
+                        cmdType = PLUGIN;
+                    }
+                }
             }
         }
     }
@@ -180,6 +197,7 @@ processLine = function (line) {
 exports.processPrivMsg = function (line) {
     if (line.response.type == BOT && cfg.client.permissions.commands[line.response.cmd] != undefined) //Check if this line is an existing control command
     {
+
         modules['ircCommands'].fire(cfg.client.permissions.commands[line.response.cmd].function, line);
     } else if (line.response.type == PLUGIN) {
         pars.logThis("debug", line, 'PROCESSPRIV::'+PLUGIN);

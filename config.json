@@ -13,13 +13,13 @@
         "user": "Katarina",
         "real": "Katarina",
         "pass": "",
-        "autoJoinChannels":[],
+        "autoJoinChannels":["#KatarinaDevelopment"],
         "autoRestartOnFailure": true,
         "restartDelay":10,
         "owner": ["admin","admin"]
     },
     "development": {
         "debugModus": true,
-        "loggerChannel": "#KatarinaDevelopment"
+        "loggerChannel": "#KatarinaLogger"
     }
 }
