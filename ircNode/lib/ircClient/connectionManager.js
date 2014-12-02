@@ -62,8 +62,8 @@ onconnect = function () {
         modules['ircRequests'].fire("Authenticate");//Authenticate with the irc server
         setTimeout(function () {
             modules['ircRequests'].fire("AutoJoinChannels");
-        }, 2750);
-    }, 1750);
+        }, 12750);
+    }, 2750);
 
 };
 
