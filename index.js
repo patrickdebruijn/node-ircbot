@@ -1,6 +1,6 @@
 var config = require('./config');
 nodeIrcBot = require('./ircNode');
-
+console.log("NODE LOADED");
 nodeIrcBot.init(config);
 
 //@TODO Weather announcements
