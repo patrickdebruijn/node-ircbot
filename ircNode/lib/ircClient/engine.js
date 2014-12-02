@@ -54,7 +54,12 @@ loadModules = function () {
 };
 connectDB = function () {
     if (!state.dbConnected) {
-        db = mongojs(process.env.MONGOHQ_URL);
+
+        if(process.env.MONGOHQ_UR!=undefined)
+            var dburl= process.env.MONGOHQ_UR;
+        else
+            var dburl= 'nodeIrcBotDb';
+        db = mongojs(dburl);
         state.dbConnected = true;
     } else
         eng.logThis('warn', 'Allready connected to: ' + cfg.client.db,'CONNECTDB');
