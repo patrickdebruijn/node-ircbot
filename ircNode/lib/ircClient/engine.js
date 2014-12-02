@@ -56,9 +56,14 @@ connectDB = function () {
     if (!state.dbConnected) {
 
         if(process.env.MONGOHQ_URL!=undefined)
-            var dburl= process.env.MONGOHQ_URL;
+        {
+            p=process.env.MONGOHQ_URL.split(",");
+            var dburl= p[1];
+        }
+
         else
             var dburl= 'nodeIrcBotDb';
+        eng.logThis('warn', 'Connecting to: ' + dburl,'CONNECTDB');
         db = mongojs(dburl);
         state.dbConnected = true;
     } else
