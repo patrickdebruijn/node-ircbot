@@ -56,7 +56,7 @@ connectDB = function () {
     if (!state.dbConnected) {
 
         if(process.env.MONGOLAB_URI !=undefined)
-            var dburl= process.env.MONGOLAB_URI;
+            var dburl= process.env.MONGOLAB_URI.replace("mongodb://","");
         else
             var dburl= 'nodeIrcBotDb';
         eng.logThis('debug', 'Connecting to: ' + dburl,'CONNECTDB');
