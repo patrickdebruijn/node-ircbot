@@ -18,11 +18,14 @@
         "url": "https://github.com/patrickdebruijn/node-ircbot/issues"
     },
     "dependencies": {
-        "messenger": "0.0.9",
-        "bunyan": "1.2.2",
-        "irc-colors": "0.6.6",
-        "merge":"1.2.0",
-        "mongoose":"3.8.19"
+        "messenger": "*",
+        "bunyan": "*",
+        "irc-colors": "*",
+        "merge":"*",
+        "mongojs":"*",
+        "usage":"*",
+        "dateformat":"*",
+        "moment":"*"
     },
     "devDependencies": {},
     "scripts": {
