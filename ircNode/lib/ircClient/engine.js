@@ -55,8 +55,8 @@ loadModules = function () {
 connectDB = function () {
     if (!state.dbConnected) {
 
-        if(process.env.MONGOHQ_URL!=undefined)
-            var dburl= process.env.MONGOHQ_URL.replace("mongodb://","");
+        if(process.env.MONGOLAB_URI !=undefined)
+            var dburl= process.env.MONGOLAB_URI.replace("mongodb://","");
         else
             var dburl= 'nodeIrcBotDb';
         eng.logThis('debug', 'Connecting to: ' + dburl,'CONNECTDB');
