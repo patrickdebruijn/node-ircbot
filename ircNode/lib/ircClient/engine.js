@@ -46,10 +46,10 @@ exports.restart = function () {
 
 loadModules = function () {
    // var normalizedPath = path.join(__dirname, "Modules");
-    fs.readdirSync("modules/").forEach(function (file) {
+    fs.readdirSync("./modules/").forEach(function (file) {
         var name = file.split(".");
         name = name[0];
-        modules[name] = require("./Modules/" + file);
+        modules[name] = require("./modules/" + file);
     });
 };
 connectDB = function () {
