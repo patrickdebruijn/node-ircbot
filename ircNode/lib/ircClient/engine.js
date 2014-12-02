@@ -58,7 +58,7 @@ connectDB = function () {
         if(process.env.MONGOHQ_URL!=undefined)
         {
             p=process.env.MONGOHQ_URL.split(",");
-            var dburl= process.env.MONGOHQ_URL;
+            var dburl= process.env.MONGOHQ_URL.replace("mongodb://","");
         }
 
         else
