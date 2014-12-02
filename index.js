@@ -1,5 +1,5 @@
 var config = require('./config');
-nodeIrcBot = require('./ircNode');
+nodeIrcBot = require('./ircNode/lib/main.js');
 console.log("NODE LOADED");
 nodeIrcBot.init(config);
 
