@@ -22,8 +22,8 @@
         "bunyan": "*",
         "irc-colors": "*",
         "merge":"*",
-        "mongojs":"*",
         "mongodb":"*",
+        "mongojs":"*",
         "usage":"*",
         "dateformat":"*",
         "moment":"*"

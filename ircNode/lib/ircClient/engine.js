@@ -56,11 +56,19 @@ connectDB = function () {
     if (!state.dbConnected) {
 
         if(process.env.MONGOLAB_URI !=undefined)
-            var dburl= process.env.MONGOLAB_URI.replace("mongodb://","");
+            var dburl= process.env.MONGOLAB_URI;
         else
             var dburl= 'nodeIrcBotDb';
         eng.logThis('debug', 'Connecting to: ' + dburl,'CONNECTDB');
         db = mongojs(dburl);
+
+        db.on('error',function(err) {
+            console.log('database error', err);
+        });
+
+        db.on('ready',function() {
+            console.log('database connected');
+        });
         state.dbConnected = true;
     } else
         eng.logThis('warn', 'Allready connected to: ' + cfg.client.db,'CONNECTDB');
