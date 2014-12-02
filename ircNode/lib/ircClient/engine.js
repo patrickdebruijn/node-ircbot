@@ -108,3 +108,4 @@ eng.logThis = function (level, msg, vari) {
 
 
 //@TODO setup https://github.com/ncb000gt/node-cron  voor module scheduled jobs
+//@TODO indexOf ?

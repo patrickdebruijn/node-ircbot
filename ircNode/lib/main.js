@@ -15,6 +15,7 @@ var ircClient = require('./ircClient/engine');
 exports.init = function (config) {
     if (config == undefined) log.error("No config specified.");
     else {
+        //@TODO check override in merge
         clientConfig = require('./ircClient/config');
         appDir = path.dirname(require.main.filename);  //find the root of the application
         cfg = merge(clientConfig,config);                   //Store config in global so its accesible across the entire application

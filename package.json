@@ -1,0 +1,37 @@
+{
+    "author": "Patrick de Bruijn <patrickdebruijn@gmail.com>",
+    "name": "ircNode",
+    "description": "Node lib for ircBots",
+    "keywords": [
+        "irc",
+        "client",
+        "chat"
+    ],
+    "version": "0.1.1",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/patrickdebruijn/node-ircbot"
+    },
+    "main": "index.js",
+    "homepage": "https://github.com/patrickdebruijn/node-ircbot",
+    "bugs": {
+        "url": "https://github.com/patrickdebruijn/node-ircbot/issues"
+    },
+    "dependencies": {
+        "messenger": "0.0.9",
+        "bunyan": "1.2.2",
+        "irc-colors": "0.6.6",
+        "merge":"1.2.0",
+        "mongoose":"3.8.19"
+    },
+    "devDependencies": {},
+    "scripts": {
+        "start": "node index.js",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "optionalDependencies": {},
+    "engines": {
+        "node": "*"
+    },
+    "license": "MIT"
+}
