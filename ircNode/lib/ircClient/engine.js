@@ -55,8 +55,8 @@ loadModules = function () {
 connectDB = function () {
     if (!state.dbConnected) {
 
-        if(process.env.MONGOHQ_UR!=undefined)
-            var dburl= process.env.MONGOHQ_UR;
+        if(process.env.MONGOHQ_URL!=undefined)
+            var dburl= process.env.MONGOHQ_URL;
         else
             var dburl= 'nodeIrcBotDb';
         db = mongojs(dburl);
