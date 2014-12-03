@@ -50,12 +50,16 @@ Array.prototype.remove = function () {
     return this;
 };
 
-Object.prototype.getKeyByValue = function( value ) {
-    for( var prop in this ) {
-        if( this.hasOwnProperty( prop ) ) {
-            if( this[ prop ] === value )
-                return prop;
+
+Object.defineProperty(Object.prototype, 'getKeyByValue', {
+    get: function(value) {
+        for( var prop in this ) {
+            if( this.hasOwnProperty( prop ) ) {
+                if( this[ prop ] === value )
+                    return prop;
+            }
         }
-    }
-    return false;
-};
+        return false;
+    },
+    enumerable: false // = Default
+});

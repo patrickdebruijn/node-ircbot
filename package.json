@@ -22,7 +22,6 @@
         "bunyan": "*",
         "irc-colors": "*",
         "merge":"*",
-        "mongodb":"*",
         "mongoose":"*",
         "usage":"*",
         "dateformat":"*",
