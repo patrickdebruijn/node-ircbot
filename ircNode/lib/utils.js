@@ -51,15 +51,17 @@ Array.prototype.remove = function () {
 };
 
 
-Object.defineProperty(Object.prototype, 'getKeyByValue', {
-    get: function(value) {
-        for( var prop in this ) {
-            if( this.hasOwnProperty( prop ) ) {
-                if( this[ prop ] === value )
-                    return prop;
+Object.defineProperty(Object.prototype, '__CLASS__', {
+    getKeyByValue: {
+        get: function (value) {
+            for (var prop in this) {
+                if (this.hasOwnProperty(prop)) {
+                    if (this[prop] === value)
+                        return prop;
+                }
             }
-        }
-        return false;
-    },
-    enumerable: false // = Default
+            return false;
+        },
+        enumerable: false // = Default
+    }
 });
