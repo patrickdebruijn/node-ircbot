@@ -63,9 +63,9 @@ parseMethod = function (response) {
     //If the line descriptor is numeric get the relevant label for readability
     var type;
     if (utils.isNumber(response[1])) {
-        if (constants.raw.REPLY.getKeyByValue(response[1]) != false) response[1] = constants.raw.REPLY.getKeyByValue(response[1]);
-        else if (constants.raw.COMMAND.getKeyByValue(response[1]) != false) response[1] = constants.raw.COMMAND.getKeyByValue(response[1]);
-        else if (constants.raw.ERROR.getKeyByValue(response[1]) != false) response[1] = constants.raw.ERROR.getKeyByValue(response[1]);
+        if (utils.getKeyByValue(constants.raw.REPLY,response[1]) != false) response[1] = utils.getKeyByValue(constants.raw.REPLY,response[1]);
+        else if (utils.getKeyByValue(constants.raw.COMMAND,response[1]) != false) response[1] = utils.getKeyByValue(constants.raw.COMMAND,response[1]);
+        else if (utils.getKeyByValue(constants.raw.ERROR,response[1]) != false) response[1] = utils.getKeyByValue(constants.raw.ERROR,response[1]);
     }
     if (utils.isNumber(response[1]))
         log.warn("Cannot find translation for line descriptor: " + response[1]);

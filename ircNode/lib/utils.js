@@ -7,6 +7,15 @@ module.exports =
     isArray: function (obj) {
         return Object.prototype.toString.call(obj) === '[object Array]';
     },
+    getKeyByValue: function(Object, value ) {
+        for( var prop in Object ) {
+            if( Object.hasOwnProperty( prop ) ) {
+                if( Object[ prop ] === value )
+                    return prop;
+            }
+        }
+        return false;
+    },
     trim: function  (string) {
         string = string.replace(/(^\s*)|(\s*$)/gi,"");
         string = string.replace(/[ ]{2,}/gi," ");
@@ -51,17 +60,3 @@ Array.prototype.remove = function () {
 };
 
 
-Object.defineProperty(Object.prototype, '__CLASS__', {
-    getKeyByValue: {
-        get: function (value) {
-            for (var prop in this) {
-                if (this.hasOwnProperty(prop)) {
-                    if (this[prop] === value)
-                        return prop;
-                }
-            }
-            return false;
-        },
-        enumerable: false // = Default
-    }
-});
