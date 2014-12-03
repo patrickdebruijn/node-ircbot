@@ -23,7 +23,7 @@
         "irc-colors": "*",
         "merge":"*",
         "mongodb":"*",
-        "mongojs":"*",
+        "mongoose":"*",
         "usage":"*",
         "dateformat":"*",
         "moment":"*"
