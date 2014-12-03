@@ -11,7 +11,12 @@ var processManager = require('./processManager'),
     connectionManager = require('./connectionManager'),
     fs = require('fs'),
     path = require('path'),
-    mongojs = require('mongojs');
+    mongoose = require ("mongoose"),
+    uristring =
+        process.env.MONGOLAB_URI ||
+        process.env.MONGOHQ_URL ||
+        cfg.client.mongodbUrl;
+
 var eng = {};
 global.db       = false;
 global.communication = {};
@@ -55,21 +60,15 @@ loadModules = function () {
 connectDB = function () {
     if (!state.dbConnected) {
 
-        if(process.env.MONGOLAB_URI !=undefined)
-            var dburl= process.env.MONGOLAB_URI;
-        else
-            var dburl= 'nodeIrcBotDb';
-        eng.logThis('debug', 'Connecting to: ' + dburl,'CONNECTDB');
-        db = mongojs(dburl);
-
-        db.on('error',function(err) {
-            console.log('database error', err);
+        mongoose.connect(uristring, function (err, res) {
+            if (err) {
+                console.log ('ERROR connecting to: ' + uristring + '. ' + err);
+            } else {
+                state.dbConnected = true;
+                console.log ('Succeeded connected to: ' + uristring);
+            }
         });
 
-        db.on('ready',function() {
-            console.log('database connected');
-        });
-        state.dbConnected = true;
     } else
         eng.logThis('warn', 'Allready connected to: ' + cfg.client.db,'CONNECTDB');
 };

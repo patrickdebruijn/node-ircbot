@@ -27,6 +27,7 @@
         "systemCommand": "control",
         "systemAclResource":"system",
         "queueDelay":"1000",
+        "mongodbUrl":"mongodb://localhost/nodeIrcBot",
         "permissions": {
             "groups": [
                 "admin",
