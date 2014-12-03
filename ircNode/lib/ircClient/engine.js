@@ -59,7 +59,7 @@ loadModules = function () {
 };
 connectDB = function () {
     if (!state.dbConnected) {
-
+        console.log ('connecting: ' + uristring);
         mongoose.connect(uristring, function (err, res) {
             if (err) {
                 console.log ('ERROR connecting to: ' + uristring + '. ' + err);
